@@ -274,7 +274,7 @@ ref_nc_post <- as.data.frame(extract.samples(ref_nc))
 # summarize individual zero orders ----
 
 zeros <- data.frame('Mentalizing' = ment_nc_post$b_ment, 'MentQuad' = ment_nc_post$b_mentQuad, 'Security' = sec_nc_post$b_sec, 'CREDs' = cred_nc_post$b_cred, 'Reflection' = ref_nc_post$b_ref)
-# write.csv(zeros, 'zero-order-posteriors.csv')
+write.csv(zeros, 'zero-order-posteriors.csv')
 # zeros <- read.csv('zero-order-posteriors.csv')
 
 zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
