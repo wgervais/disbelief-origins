@@ -1,0 +1,114 @@
+---
+title: "GFK Summary"
+author: "Will Gervais"
+date: "10/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rethinking)
+library(tidyverse)
+library(ggridges)
+library(xtable)
+
+# get data ----
+go <- read.csv('go.csv')
+
+go$disbelief <- go$sbs_m * -1
+go$ment_lo <- go$pt_m * -1
+go$cred_lo <- go$cred_m * -1
+go$security <- go$mot_m * -1
+go$reflection <- go$crtZ
+go$ageZ <- scale(go$age, center=T, scale=T)[,]
+go$educZ <- scale(go$educ, center=T, scale=T)[,]
+go$femZ <- scale(go$female, scale=T, center = T)[,]
+go$econ_consZ <- scale(go$econ_cons, center=T, scale=T)[,]
+go$social_consZ <- scale(go$social_cons, center=T, scale=T)[,]
+summary(go)
+
+d <- select(go, 
+            disbelief, 
+            ment_lo, 
+            security, 
+            cred_lo, 
+            reflection,
+            ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+
+
+# zero orders
+dment_nc <- select(d, disbelief, ment_lo)
+dment_nc <- dment_nc[complete.cases(dment_nc),]
+
+dsec_nc <- select(d, disbelief, security)
+dsec_nc <- dsec_nc[complete.cases(dsec_nc),]
+
+dcred_nc <- select(d, disbelief, cred_lo)
+dcred_nc <- dcred_nc[complete.cases(dcred_nc),]
+
+dref_nc <- select(d, disbelief, reflection)
+dref_nc <- dref_nc[complete.cases(dref_nc),]
+
+
+# combined zero order posteriors
+zeros <- read.csv('zero order posteriors.csv')
+
+# full posterior, long
+full_cv_post <- read.csv('full_posterior.csv')
+
+
+# handy functions ----
+
+
+bigger <- function(first, second) {
+  pr.big <- mean(ifelse(first > second, 1, 0))
+  return(pr.big)
+}
+
+biggerZero <- function(input) {
+  pr.big <- mean(ifelse(input > 0, 1, 0))
+  return(pr.big)
+}
+
+
+# a couple of quick functions for pulling HPDIs
+
+
+low <- function(x){
+  v <- HPDI(x, prob=.97)[1]
+  return(v)
+}
+
+
+high <- function(x){
+  v <- HPDI(x, prob=.97)[2]
+  return(v)
+}
+
+
+```
+
+## Origins of Disbelief
+
+Religion is a core component of human nature, yet a comprehensive scientific account of religion also needs to account for religious disbelief. Despite potentially drastic overreporting of religiosity, a third of the world’s 7 billion human inhabitants may actually be atheists—merely people who do not believe in God or gods. The origins of disbelief thus present a key testing ground for theories of religion. Here, we evaluate the predictions of four theoretical approaches to the origins of disbelief.
+
+To currently believe in a god, one 1) must be able to mentally represent gods, 2) must be motivated to ‘interact’ with gods, 3) must receive credible cultural cues that some gods are real, and 4) must intuitively maintain this belief over time. Tweaks to any of these four components may instead yield disbelief in gods. Separate lines of research partially support this supposition. First, individual differences in mentalizing abilities (one key component of mind perception) predict religious disbelief ## in at least some samples. Second, although religion flourishes where life is unstable, existential security predicts reduced religiosity ##. Third, lack of credibility enhancing displays (CREDs) that one ought to believe in any gods is a good global predictor of atheism. Finally, people who reflectively override their intuitions tend to be less religious than those who ‘go with their guts’, although the magnitude and consistency of this relation is debatable. Although these four factors relate to religious disbelief in isolation, little work considers their operation in conjunction.
+
+Different theoretical approaches make divergent predictions about which of these four factors are the most potent predictors of religious disbelief. First, secularization models posit that increases in existential security (wealth, health, education) reduce religious motivation; this approach is common in sociology of religion and in social psychology, under the banner of compensatory control. Second, evolutionary psychology and cognitive science of religion often view religion as a cognitive byproduct of other mental adaptations, such as mind perception or predator detection. In this view, challenges in the core cognitive faculties underlying such adaptations (e.g., mentalizing) would predict disbelief, as would people being able to override their religious intuitions via cognitive reflection. Third, cultural evolutionary models highlight the social learning processes underpinning religious belief and disbelief, and largely predict that context-biased social learning such as CREDs would be strongly associated with degrees of religious belief. Finally, dual inheritance models somewhat integrate these various perspectives, and predict that CREDs would be most important, followed by other factors such as cognitive reflection, mentalizing, and existential security. Table 1 depicts predictions derived from each of these perspectives. By simultaneously considering mentalizing, existential security, CREDs, and cognitive reflection, we are able to evaluate the suitability of each of these four theoretical approaches for understanding the psychological origins of religious disbelief.
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
