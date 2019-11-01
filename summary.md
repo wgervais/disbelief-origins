@@ -262,4 +262,4 @@ Next, we probed for interactions between the four factors. Results suggest an in
 
 Finally, we tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
-![](summary_files/figure-html/individual scatters-1.png)<!-- -->![](summary_files/figure-html/individual scatters-2.png)<!-- -->![](summary_files/figure-html/individual scatters-3.png)<!-- -->![](summary_files/figure-html/individual scatters-4.png)<!-- -->
+![](summary_files/figure-html/individual scatters-1.png)<!-- -->

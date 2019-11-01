@@ -15,6 +15,7 @@ library(rethinking)
 library(tidyverse)
 library(ggridges)
 library(xtable)
+library(ggpubr)
 
 # get data ----
 go <- read.csv('go.csv')
@@ -350,7 +351,7 @@ Finally, we tested each candidate factor in isolation, merely to replicate previ
 ```{r individual scatters, echo=F, message=F, error=F}
 # mentalizing
 
-ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
+mp <- ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
   labs(x='Advanced\nMentalizing', y= 'Belief') +
   geom_point(alpha=.2, position='jitter', color='darkred') +
   stat_smooth(method=lm, color='darkred') +
@@ -371,7 +372,7 @@ ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
 
 # motivation
 
-ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
+sp <- ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
   labs(x='Existential\nSecurity', y= 'Belief') +
   geom_point(alpha=.2, position='jitter', color='darkblue') +
   stat_smooth(method=lm, color='darkblue') +
@@ -392,7 +393,7 @@ ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
 
 # CREDs
 
-ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
+cp <- ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
   labs(x='Religious\nCREDs', y= 'Belief') +
   geom_point(alpha=.2, position='jitter', color='purple3') +
   stat_smooth(method=lm, color='purple3') +
@@ -414,7 +415,7 @@ ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
 
 # reflection cognitive style
 
-ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
+rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
   labs(x='Cognitive\nReflection', y= 'Belief') +
   geom_point(alpha=.2, position='jitter', color='darkgreen') +
   stat_smooth(method=lm, color='darkgreen') +
@@ -434,4 +435,7 @@ ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
   )
 
 
+ggarrange(mp, sp, cp, rp, 
+          labels = c("A", "B", "C", "D"),
+          ncol = 2, nrow = 2)
 
