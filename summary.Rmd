@@ -36,6 +36,8 @@ d <- select(go,
             ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
 
 
+full_cv_post <- read.csv('full-posterior.csv')
+
 # zero orders
 dment_nc <- select(d, disbelief, ment_lo)
 dment_nc <- dment_nc[complete.cases(dment_nc),]
@@ -126,12 +128,83 @@ predtab <- data.frame(
 predictMe
 ```
 
-## Including Plots
+## Really Basic Methods
 
-You can also embed plots, for example:
+We preregistered a set of analyses that pit secularization, cognitive byproduct, socialization, and dual inheritance models against each other. Specifically, we posed three broad questions:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+*I.	What are the relative contributions of each factor when considered simultaneously?*
+*II.	How do the factors interact with each other in predicting belief and disbelief?*
+*III.	Does early work on each individual factor successfully replicate in a nationally representative sample?*
+
+To approach these questions, we contracted a nationally representative sample of USA adults (N= 1417) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) theoretically modeled cues of cultural exposure to credible cues of religiosity (CREDs), and 4) intuitive versus reflective cognitive style. For robustness, we also included a number of demographic and psychological covariates.
+
+## Quick Results Summary
+
+Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we report two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism. Cognitive reflection remained a consistent predictor of religious disbelief, but following earlier cross-cultural work its predictive power was quite meager. Mentalizing challenges were only weakly associated, if at all, with disbelief, and existential security predicted essentially nothing.
+
+```{r posterior plot, echo=FALSE}
+post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
+
+post.long.b <- gather( post.b, type, beta)
+
+post.long.b$type <- factor(post.long.b$type, levels=c(  'Existential\nSecurity\n\n\n', 'Lower\nMentalizing\n\n\n','Cognitive\nReflection\n\n\n',  'Fewer\nCREDs\n\n\n'))
+
+
+ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
+  geom_vline(xintercept = 0, color='darkgrey') +
+  geom_density_ridges(alpha = .7, scale = 1.9, rel_min_height = 0.01, size=0) +
+  labs(x = '\nAssociation With Disbelief\n(standardized beta)') +
+  scale_x_continuous(limits = c(-.1, .4)) +
+  scale_y_discrete(expand = expand_scale(add = c(0.3, 2))) +
+  scale_fill_manual(values = c('darkblue', 'darkred',   'darkgreen', 'purple3' )) +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16, color = c('darkblue', 'darkred',   'darkgreen', 'purple3' )),
+        axis.title = element_text(size = 20),
+        axis.ticks = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "none",
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey"),
+        axis.title.y = element_blank()
+  )
+
+
+```
+
+
+```{r full model table, echo=FALSE}
+
+
+fullPost <- full_cv_post %>% select(-X, -a, -sigma)
+
+fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
+fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
+fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
+
+
+beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits=2)
+beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits=2)
+beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits=2)
+hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
+Pr0 <- fullPost %>% sapply(biggerZero) %>% unname %>% round(digits=2)
+
+pred <- c('Low Mentalizing', 'Mentalizing (quad)', 'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
+
+fulltab <- data.frame(variable = pred, beta = beta, HPDI = hpdi, Pr = Pr0 )
+fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
+fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
+
+posttab <- fulltab %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left") %>%
+  column_spec(1, bold = T)
+
+posttab
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
