@@ -178,8 +178,7 @@ posttab
 Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we report two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism. Cognitive reflection remained a consistent predictor of religious disbelief, but following earlier cross-cultural work its predictive power was quite meager. Mentalizing challenges were only weakly associated, if at all, with disbelief, and existential security predicted essentially nothing.
 
 
-**Figure 1:**
-Posterior densities for how well each factor predicts religious disbelief (standardized beta).
+
 ```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE}
 post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
 
@@ -214,13 +213,21 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
 
 ```
 
+***Figure 1:*** Posterior densities for how well each factor predicts religious disbelief (standardized beta).
+
 
 
 ### Planned Interactions
 
 Next, we probed for interactions between the four factors. Results suggest an interaction between cultural learning and reflective cognitive style . We broke down this interaction in two different ways. First, we considered the association between disbelief and reflective cognitive style among those comparatively high and low on credible cultural cues of religious belief (Figure 2a). Reflective cognitive style primarily predicts religious disbelief among those who were also comparatively low in cultural exposure to credible religious cues of faith. Second, we predicted current religious belief from cultural exposure to credibility enhancing displays of religion and then correlated reflective cognitive style with the residual. Effectively, this analysis suggests that reflective thinkers tend to be less religious than one would assume based solely on their cultural exposure to religious cues (Figure 2b). It is thus possible that reflective cognitive style is one mechanism that leads people to lose faith over time ##; in contrast, an intuitive cognitive style leads people to adhere to their early cultural inputs and perhaps become more religious in some contexts. These patterns highlight the interactive roles of cultural context and evolved intuitions on religious cognition, as predicted by dual inheritance theories.
 
-```{r interaction figure, echo=False}
+```{r interaction plot, echo=FALSE, warning=FALSE, message=FALSE}
+
+dcrt_cred_cv <- select(d, disbelief, cred_lo, reflection, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+dcrt_cred_cv <- dcrt_cred_cv[complete.cases(dcrt_cred_cv),]
+
+dcrt_cred_cv$belief <- dcrt_cred_cv$disbelief * -1
+dcrt_cred_cv$cred <- dcrt_cred_cv$cred_lo * -1
 
 leastcred <- min(dcrt_cred_cv$cred)
 mostcred <- max(dcrt_cred_cv$cred)
@@ -234,13 +241,8 @@ maxCRED_a <- intx$b_cred * mostcred + intx$a
 maxCRED_b <- intx$b_ref + intx$b_int * mostcred
 
 cred_crt <- data.frame(meanCRED_a, meanCRED_b, minCRED_a, minCRED_b, maxCRED_a, maxCRED_b)
-summary(cred_crt)
 
-# summaries
 
-apply(cred_crt, 2, mean)
-apply(cred_crt, 2, low)
-apply(cred_crt, 2, high)
 
 
 # get means for lines
@@ -308,6 +310,7 @@ ggplot(dcrt_cred_cv, aes(x=reflection, y=belief)) +
 
 ```
 
+***Figure 2:*** Interaction between CREDs and Cognitive Reflection
 
 ```{r individual tables, echo=FALSE}
 zeros <- read.csv('zero-order-posteriors.csv')
@@ -340,6 +343,91 @@ zerotab
 
 Finally, we tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
+```{r individual scatters, echo=F, message=F, error=F}
+# mentalizing
+
+ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
+  labs(x='Advanced\nMentalizing', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkred') +
+  stat_smooth(method=lm, color='darkred') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkred'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# motivation
+
+ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
+  labs(x='Existential\nSecurity', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkblue') +
+  stat_smooth(method=lm, color='darkblue') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkblue'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# CREDs
+
+ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
+  labs(x='Religious\nCREDs', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='purple3') +
+  stat_smooth(method=lm, color='purple3') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='purple3'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+
+# reflection cognitive style
+
+ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
+  labs(x='Cognitive\nReflection', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkgreen') +
+  stat_smooth(method=lm, color='darkgreen') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkgreen'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
 
 
 
