@@ -2,7 +2,10 @@
 title: "Origins of Disbelief Summary"
 author: "Will Gervais"
 date: "10/31/2019"
-output: html_document
+
+output:  
+  rmarkdown::html_document:
+    theme: journal
 ---
 
 ```{r setup, include=FALSE}
