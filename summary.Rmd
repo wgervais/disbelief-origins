@@ -5,6 +5,7 @@ date: "10/31/2019"
 
 output:  
   rmarkdown::html_document:
+    keep_md: true
     theme: readable
 ---
 
