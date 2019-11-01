@@ -176,6 +176,8 @@ posttab
 Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we report two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism. Cognitive reflection remained a consistent predictor of religious disbelief, but following earlier cross-cultural work its predictive power was quite meager. Mentalizing challenges were only weakly associated, if at all, with disbelief, and existential security predicted essentially nothing.
 
 
+**Figure 1:**
+Posterior densities for how well each factor predicts religious disbelief (standardized beta).
 ```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE}
 post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
 
@@ -209,18 +211,13 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
 
 
 ```
-## Figure 1 ##
-Posterior densities for how well each factor predicts religious disbelief (standardized beta).
 
 
 
-
-### Individual Replications
-
-We tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
 ```{r individual tables, echo=FALSE}
 zeros <- read.csv('zero-order-posteriors.csv')
+zeros <- select(zeros, -X)
 
 zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
 zero.l <- zeros %>% sapply(low) %>% unname %>% round(digits = 2)
@@ -241,6 +238,11 @@ zerotab <- zero.table %>%
   column_spec(1, bold = T)
 
 zerotab
+
+```
+### Individual Replications
+
+We tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
 
 
