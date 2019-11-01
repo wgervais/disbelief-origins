@@ -138,10 +138,42 @@ We preregistered a set of analyses that pit secularization, cognitive byproduct,
 
 To approach these questions, we contracted a nationally representative sample of USA adults (N= 1417) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) theoretically modeled cues of cultural exposure to credible cues of religiosity (CREDs), and 4) intuitive versus reflective cognitive style. For robustness, we also included a number of demographic and psychological covariates.
 
+```{r full model table, echo=FALSE}
+
+
+fullPost <- full_cv_post %>% select(-X, -a, -sigma)
+
+fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
+fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
+fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
+
+
+beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits=2)
+beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits=2)
+beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits=2)
+hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
+Pr0 <- fullPost %>% sapply(biggerZero) %>% unname %>% round(digits=2)
+
+pred <- c('Low Mentalizing', 'Mentalizing (quad)', 'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
+
+fulltab <- data.frame(Variable = pred, Beta = beta, HPDI = hpdi, Pr = Pr0 )
+fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
+fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
+
+posttab <- fulltab %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "float_right") %>%
+  column_spec(1, bold = T)
+
+posttab
+```
 ## Quick Results Summary
 
 Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we report two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism. Cognitive reflection remained a consistent predictor of religious disbelief, but following earlier cross-cultural work its predictive power was quite meager. Mentalizing challenges were only weakly associated, if at all, with disbelief, and existential security predicted essentially nothing.
 
+
+### Figure 1
+Posterior densities for how well each factor predicts religious disbelief (standardized beta).
 ```{r posterior plot, echo=FALSE}
 post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
 
@@ -177,35 +209,7 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
 ```
 
 
-```{r full model table, echo=FALSE}
 
-
-fullPost <- full_cv_post %>% select(-X, -a, -sigma)
-
-fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
-fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
-fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
-
-
-beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits=2)
-beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits=2)
-beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits=2)
-hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
-Pr0 <- fullPost %>% sapply(biggerZero) %>% unname %>% round(digits=2)
-
-pred <- c('Low Mentalizing', 'Mentalizing (quad)', 'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
-
-fulltab <- data.frame(variable = pred, beta = beta, HPDI = hpdi, Pr = Pr0 )
-fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
-fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
-
-posttab <- fulltab %>%
-  kable() %>%
-  kable_styling(bootstrap_options = "striped", full_width = F, position = "left") %>%
-  column_spec(1, bold = T)
-
-posttab
-```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
