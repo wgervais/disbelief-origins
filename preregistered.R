@@ -363,7 +363,7 @@ crt_cred_cv <- map2stan(
     mu <- a + reflection*( b_ref + b_int*cred) + b_cred*cred + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
     c(a, b_cred, b_ref, b_int, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
-  ), data=dcrt_cred_cv, WAIC = T, 
+  ), data=dcrt_cred_cv, WAIC = F, 
   chains = 1, cores = 1, 
   iter = 22000, warmup = 2000
 )

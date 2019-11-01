@@ -58,6 +58,8 @@ zeros <- read.csv('zero-order-posteriors.csv')
 # full posterior, long
 full_cv_post <- read.csv('full-posterior.csv')
 
+# interactions
+intx <- read.csv('CrtCREDPost.csv')
 
 # handy functions ----
 
@@ -132,11 +134,11 @@ predictMe
 
 We preregistered a set of analyses that pit secularization, cognitive byproduct, socialization, and dual inheritance models against each other. Specifically, we posed three broad questions:
 
-*I.	What are the relative contributions of each factor when considered simultaneously?*
+***I.	What are the relative contributions of each factor when considered simultaneously?***
 
-*II.	How do the factors interact with each other in predicting belief and disbelief?*
+***II.	How do the factors interact with each other in predicting belief and disbelief?***
 
-*III.	Does early work on each individual factor successfully replicate in a nationally representative sample?*
+***III.	Does early work on each individual factor successfully replicate in a nationally representative sample?***
 
 To approach these questions, we contracted a nationally representative sample of USA adults (N= 1417) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) theoretically modeled cues of cultural exposure to credible cues of religiosity (CREDs), and 4) intuitive versus reflective cognitive style. For robustness, we also included a number of demographic and psychological covariates.
 
@@ -214,6 +216,98 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
 
 
 
+### Planned Interactions
+
+Next, we probed for interactions between the four factors. Results suggest an interaction between cultural learning and reflective cognitive style . We broke down this interaction in two different ways. First, we considered the association between disbelief and reflective cognitive style among those comparatively high and low on credible cultural cues of religious belief (Figure 2a). Reflective cognitive style primarily predicts religious disbelief among those who were also comparatively low in cultural exposure to credible religious cues of faith. Second, we predicted current religious belief from cultural exposure to credibility enhancing displays of religion and then correlated reflective cognitive style with the residual. Effectively, this analysis suggests that reflective thinkers tend to be less religious than one would assume based solely on their cultural exposure to religious cues (Figure 2b). It is thus possible that reflective cognitive style is one mechanism that leads people to lose faith over time ##; in contrast, an intuitive cognitive style leads people to adhere to their early cultural inputs and perhaps become more religious in some contexts. These patterns highlight the interactive roles of cultural context and evolved intuitions on religious cognition, as predicted by dual inheritance theories.
+
+```{r interaction figure, echo=False}
+
+leastcred <- min(dcrt_cred_cv$cred)
+mostcred <- max(dcrt_cred_cv$cred)
+
+
+meanCRED_a <- intx$a
+meanCRED_b <- intx$b_ref
+minCRED_a <- intx$b_cred*leastcred + intx$a
+minCRED_b <- intx$b_ref + intx$b_int * leastcred
+maxCRED_a <- intx$b_cred * mostcred + intx$a
+maxCRED_b <- intx$b_ref + intx$b_int * mostcred
+
+cred_crt <- data.frame(meanCRED_a, meanCRED_b, minCRED_a, minCRED_b, maxCRED_a, maxCRED_b)
+summary(cred_crt)
+
+# summaries
+
+apply(cred_crt, 2, mean)
+apply(cred_crt, 2, low)
+apply(cred_crt, 2, high)
+
+
+# get means for lines
+
+mean.int <- mean(cred_crt$meanCRED_a)
+mean.slope <- mean(cred_crt$meanCRED_b)
+min.int <- mean(cred_crt$minCRED_a)
+min.slope <- mean(cred_crt$minCRED_b)
+max.int <- mean(cred_crt$maxCRED_a)
+max.slope <- mean(cred_crt$maxCRED_b)
+
+# get 20 smaples of each
+
+cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] #shuffle the deck
+
+mean.20int <- c(cred_crt$meanCRED_a[1:100])
+mean.20slope <- c(cred_crt$meanCRED_b[1:100])
+
+min.20int <- c(cred_crt$minCRED_a[1:100])
+min.20slope <- c(cred_crt$minCRED_b[1:100])
+
+max.20int <- c(cred_crt$maxCRED_a[1:100])
+max.20slope <- c(cred_crt$maxCRED_b[1:100])
+
+# to plot this shizzle
+
+d <- data.frame(x=c(min(dcrt_cred_cv$reflection), 0, max(dcrt_cred_cv$reflection)))
+
+brange <- max(dcrt_cred_cv$reflection) - min(dcrt_cred_cv$reflection)
+
+decs <- seq(from=0, to=1, by=.33)
+
+b.breaks <- min(dcrt_cred_cv$reflection) + decs*brange
+
+
+meancol <- 'black'
+mincol <- 'purple'
+maxcol <- 'hotpink'
+
+
+ggplot(dcrt_cred_cv, aes(x=reflection, y=belief)) +
+  geom_point(alpha=.05, position = 'jitter') +
+  scale_x_continuous(breaks=b.breaks, labels=c(0, 3, 6, 9)) +
+  labs(x="Cognitive Reflection\n(correct CRT items)", y="Belief") +
+  geom_abline(slope=mean.20slope, intercept=mean.20int, lwd=.2, col=meancol, alpha=.15) +
+  geom_abline(slope=min.20slope, intercept=min.20int, lwd=.2, col=mincol, alpha=.15) +
+  geom_abline(slope=max.20slope, intercept=max.20int, lwd=.2, col=maxcol, alpha=.15) +
+  geom_abline(slope=c(mean.slope, min.slope, max.slope), intercept=c(mean.int, min.int, max.int), col=c(meancol, mincol, maxcol), lwd=1.2) +
+  annotate("text", x = 0.3, y = c(.7, 0.1, -1.2), label = c("Max CRED", "Mean CRED", "Min CRED"), hjust=0, vjust=0, size=6, color=c(maxcol, meancol, mincol), family = "Times") +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 20),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.x = element_blank() ,
+        panel.grid.minor.x = element_blank() ,
+        panel.grid.major.y = element_blank() ,
+        panel.grid.minor.y = element_blank() ,
+        panel.border = element_rect(color="darkgrey"),
+        plot.margin = unit(c(1, 1, 1, 1), "lines")) 
+
+
+```
+
 
 ```{r individual tables, echo=FALSE}
 zeros <- read.csv('zero-order-posteriors.csv')
@@ -240,9 +334,11 @@ zerotab <- zero.table %>%
 zerotab
 
 ```
+
+
 ### Individual Replications
 
-We tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
+Finally, we tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
 
 
