@@ -5,7 +5,7 @@ date: "10/31/2019"
 
 output:  
   rmarkdown::html_document:
-    theme: journal
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
