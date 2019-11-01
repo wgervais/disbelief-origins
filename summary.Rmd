@@ -133,7 +133,9 @@ predictMe
 We preregistered a set of analyses that pit secularization, cognitive byproduct, socialization, and dual inheritance models against each other. Specifically, we posed three broad questions:
 
 *I.	What are the relative contributions of each factor when considered simultaneously?*
+
 *II.	How do the factors interact with each other in predicting belief and disbelief?*
+
 *III.	Does early work on each individual factor successfully replicate in a nationally representative sample?*
 
 To approach these questions, we contracted a nationally representative sample of USA adults (N= 1417) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) theoretically modeled cues of cultural exposure to credible cues of religiosity (CREDs), and 4) intuitive versus reflective cognitive style. For robustness, we also included a number of demographic and psychological covariates.
@@ -169,12 +171,12 @@ posttab
 ```
 ## Quick Results Summary
 
+### Relative Contributions
+
 Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we report two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism. Cognitive reflection remained a consistent predictor of religious disbelief, but following earlier cross-cultural work its predictive power was quite meager. Mentalizing challenges were only weakly associated, if at all, with disbelief, and existential security predicted essentially nothing.
 
 
-### Figure 1
-Posterior densities for how well each factor predicts religious disbelief (standardized beta).
-```{r posterior plot, echo=FALSE}
+```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE}
 post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
 
 post.long.b <- gather( post.b, type, beta)
@@ -207,9 +209,39 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
 
 
 ```
+## Figure 1 ##
+Posterior densities for how well each factor predicts religious disbelief (standardized beta).
 
 
 
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Individual Replications
+
+We tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
+
+```{r individual tables, echo=FALSE}
+zeros <- read.csv('zero-order-posteriors.csv')
+
+zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
+zero.l <- zeros %>% sapply(low) %>% unname %>% round(digits = 2)
+zero.h <- zeros %>% sapply(high) %>% unname %>% round(digits = 2)
+zero.pr <- zeros %>% sapply(biggerZero) %>% unname %>% round(digits = 2) 
+
+pdi <- paste0('[', zero.l, ', ', zero.h, ']')
+
+
+v <- c('Low Mentalizing', 'Mentalizing (quad)', 'High Security', 'Low CREDs', 'High Reflection')
+
+zero.table <- data.frame(Variable = v, r = zero.m, HPDI= pdi, Pr = zero.pr)
+zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
+
+zerotab <- zero.table %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "float_right") %>%
+  column_spec(1, bold = T)
+
+zerotab
+
+
+
 

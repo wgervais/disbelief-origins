@@ -527,7 +527,7 @@ ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
 
 
 # combined posteriors ----
-
+full_cv_post <- read.csv('full-posterior.csv')
 
 summary(full_cv_post)
 
@@ -669,7 +669,7 @@ ggplot(dcrt_cred_cv, aes(x=reflection, y=belief)) +
 
 
 
-fullPost <- full_cv_post %>% select(-a, -sigma)
+fullPost <- full_cv_post %>% select(-X, -a, -sigma)
 
 fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
 fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
