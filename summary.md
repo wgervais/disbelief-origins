@@ -284,62 +284,18 @@ In an exploratory analysis, we used credibility enhancing displays, cognitive re
 
 
 ```r
+cred_crt <- read.csv('cred-crt.csv')
+cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] 
+
 # get means for lines
 
 mean.i <- mean(cred_crt$mean.int)
-```
-
-```
-## Warning in mean.default(cred_crt$mean.int): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 mean.s <- mean(cred_crt$mean.slope)
-```
-
-```
-## Warning in mean.default(cred_crt$mean.slope): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 min.i <- mean(cred_crt$min.int)
-```
-
-```
-## Warning in mean.default(cred_crt$min.int): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 min.s <- mean(cred_crt$min.slope)
-```
-
-```
-## Warning in mean.default(cred_crt$min.slope): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 max.i <- mean(cred_crt$max.int)
-```
-
-```
-## Warning in mean.default(cred_crt$max.int): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 max.s <- mean(cred_crt$max.slope)
-```
 
-```
-## Warning in mean.default(cred_crt$max.slope): argument is not numeric or
-## logical: returning NA
-```
-
-```r
 # get 100 smaples of each
 
 cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] #shuffle the deck
@@ -430,10 +386,6 @@ ggplot(d1, aes(x=x)) +
 ```
 ## Warning in max(d$reflection): no non-missing arguments to max; returning -
 ## Inf
-```
-
-```
-## Warning: Removed 3 rows containing missing values (geom_abline).
 ```
 
 ```
