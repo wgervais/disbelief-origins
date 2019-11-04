@@ -120,6 +120,7 @@ max.slope <- logistic(maxCRED_a + maxCRED_b) - logistic(maxCRED_a)
 
 cred_crt <- data.frame(mean.int, mean.slope, min.int, min.slope, max.int, max.slope)
 summary(cred_crt)
+write.csv(cred_crt, 'cred-crt.csv')
 
 # get means for lines
 

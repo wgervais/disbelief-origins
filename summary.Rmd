@@ -44,6 +44,8 @@ d <- select(go,
 
 full_cv_post <- read.csv('full-posterior.csv')
 
+cred_crt <- read.csv('cred-crt.csv')
+
 # zero orders
 dment_nc <- select(d, disbelief, ment_lo)
 dment_nc <- dment_nc[complete.cases(dment_nc),]
@@ -454,48 +456,8 @@ In an exploratory analysis, we used credibility enhancing displays, cognitive re
 
 
 ```{r binary, message=F, echo=T}
-d <- select(go, 
-            atheist, 
-            cred,
-            reflection)
-
-d <- d[complete.cases(d),]
-
-athNC <- map2stan(
-  alist(
-    atheist ~ dbinom( 1 , p ),
-    logit(p) <- a + reflection*( b_ref + b_int*cred) + b_cred*cred,
-    c(a, b_ref, b_cred, b_int) ~ dnorm(0,2)
-  ), data=d, WAIC=T, chains=1, cores=1, iter=22000, warmup=1000
-)
-
-intcc <- data.frame(extract.samples(athNC))
-
-
-leastcred <- min(d$cred)
-mostcred <- max(d$cred)
-
-
-meanCRED_a <- intcc$a
-meanCRED_b <- intcc$b_ref
-minCRED_a <- intcc$a + intcc$b_cred*leastcred
-minCRED_b <- intcc$b_ref + intcc$b_int*leastcred
-maxCRED_a <- intcc$a + intcc$b_cred*mostcred
-maxCRED_b <- intcc$b_ref + intcc$b_int*mostcred
-
-
-mean.int <- logistic(meanCRED_a)
-mean.slope <- logistic(meanCRED_a + meanCRED_b) - logistic(meanCRED_a)
-
-min.int <- logistic(minCRED_a)
-min.slope <- logistic(minCRED_a + minCRED_b) - logistic(minCRED_a)
-
-max.int <- logistic(maxCRED_a)
-max.slope <- logistic(maxCRED_a + maxCRED_b) - logistic(maxCRED_a)
-
-
-cred_crt <- data.frame(mean.int, mean.slope, min.int, min.slope, max.int, max.slope)
-summary(cred_crt)
+cred_crt <- read.csv('cred-crt.csv')
+cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] 
 
 # get means for lines
 

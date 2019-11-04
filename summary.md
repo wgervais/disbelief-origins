@@ -272,3 +272,174 @@ Next, we probed for interactions between the four factors. Results suggest an in
 Finally, we tested each candidate factor in isolation, merely to replicate previous work. In individual zero-order replication analyses (Table 3), only cultural learning and reflective cognitive style emerged as consistent predictors of religious disbelief. That two of the candidate factors culled from existing literature did not appear as robust predictors in these models may suggest tempered enthusiasm for their utility as predictors of individual differences in religiosity more broadly, although they both (especially existential security) may still be useful in analyzing larger-scale regional and international trends.
 
 ![](summary_files/figure-html/individual scatters-1.png)<!-- -->
+
+
+### Binary Classification
+
+In an exploratory analysis, we used credibility enhancing displays, cognitive reflection, and their interaction to predict whether or not people indicate belief in God. 
+
+
+
+
+
+
+```r
+# get means for lines
+
+mean.i <- mean(cred_crt$mean.int)
+```
+
+```
+## Warning in mean.default(cred_crt$mean.int): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+mean.s <- mean(cred_crt$mean.slope)
+```
+
+```
+## Warning in mean.default(cred_crt$mean.slope): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+min.i <- mean(cred_crt$min.int)
+```
+
+```
+## Warning in mean.default(cred_crt$min.int): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+min.s <- mean(cred_crt$min.slope)
+```
+
+```
+## Warning in mean.default(cred_crt$min.slope): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+max.i <- mean(cred_crt$max.int)
+```
+
+```
+## Warning in mean.default(cred_crt$max.int): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+max.s <- mean(cred_crt$max.slope)
+```
+
+```
+## Warning in mean.default(cred_crt$max.slope): argument is not numeric or
+## logical: returning NA
+```
+
+```r
+# get 100 smaples of each
+
+cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] #shuffle the deck
+
+mean.100int <- c(cred_crt$mean.int[1:100])
+mean.100slope <- c(cred_crt$mean.slope[1:100])
+
+min.100int <- c(cred_crt$min.int[1:100])
+min.100slope <- c(cred_crt$min.slope[1:100])
+
+max.100int <- c(cred_crt$max.int[1:100])
+max.100slope <- c(cred_crt$max.slope[1:100])
+
+# to plot this shizzle
+
+d1 <- data.frame(x=c(min(d$reflection), 0, max(d$reflection)))
+```
+
+```
+## Warning in min(d$reflection): no non-missing arguments to min; returning
+## Inf
+```
+
+```
+## Warning in max(d$reflection): no non-missing arguments to max; returning -
+## Inf
+```
+
+```r
+brange <- max(d$reflection) - min(d$reflection)
+```
+
+```
+## Warning in max(d$reflection): no non-missing arguments to max; returning -
+## Inf
+```
+
+```
+## Warning in min(d$reflection): no non-missing arguments to min; returning
+## Inf
+```
+
+```r
+decs <- seq(from=0, to=1, by=.33)
+
+b.breaks <- min(d$reflection) + decs*brange
+```
+
+```
+## Warning in min(d$reflection): no non-missing arguments to min; returning
+## Inf
+```
+
+```r
+meancol <- 'black'
+mincol <- 'purple'
+maxcol <- 'hotpink'
+
+
+ggplot(d1, aes(x=x)) +
+  theme_bw() +
+  scale_y_continuous(limits=c(0, 1)) +
+  scale_x_continuous(limits=c(min(d$reflection)+.2, max(d$reflection))-.1,breaks=b.breaks, labels=c(0, 3, 6, 9)) +
+  labs(x="Cognitive Reflection\n(correct CRT items)", y="Atheist Probability\n") +
+  geom_abline(slope=mean.100slope, intercept=mean.100int, lwd=.2, col=meancol, alpha=.15) +
+  geom_abline(slope=min.100slope, intercept=min.100int, lwd=.2, col=mincol, alpha=.15) +
+  geom_abline(slope=max.100slope, intercept=max.100int, lwd=.2, col=maxcol, alpha=.15) +
+  geom_abline(slope=c(mean.s, min.s, max.s), intercept=c(mean.i, min.i, max.i), col=c(meancol, mincol, maxcol), lwd=1.2) +
+  annotate("text", x = 0.3, y = c(.1, 0.3, .7), label = c("Max CRED", "Mean CRED", "Min CRED"), hjust=0, vjust=0, size=6, color=c(maxcol, meancol, mincol), family = "Times") +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 20),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.grid.major.x = element_blank() ,
+        panel.grid.minor.x = element_blank() ,
+        panel.grid.minor.y = element_blank() ,
+        panel.border = element_rect(color="darkgrey"),
+        plot.margin = unit(c(1, 1, 1, 1), "lines")) 
+```
+
+```
+## Warning in min(d$reflection): no non-missing arguments to min; returning
+## Inf
+```
+
+```
+## Warning in max(d$reflection): no non-missing arguments to max; returning -
+## Inf
+```
+
+```
+## Warning: Removed 3 rows containing missing values (geom_abline).
+```
+
+```
+## Warning: Removed 3 rows containing missing values (geom_text).
+```
+
+![](summary_files/figure-html/binary-1.png)<!-- -->
+
+
