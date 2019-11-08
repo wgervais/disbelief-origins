@@ -14,6 +14,8 @@ library(ggridges)
 library(xtable)
 library(ggpubr)
 library(kableExtra)
+library(knitr)
+library(formattable)
 
 # get data ----
 go <- read.csv('go.csv')
@@ -161,4 +163,298 @@ It is initially puzzling that existential security proved impotent in our analys
 This work suggests two broader meta-scientific points. Of the four candidate factors we tested, one (credibility enhancing displays) is derived from formal theoretical modeling in gene-culture coevolution, while the other three emerged from verbal argumentation. In terms of predicting large-scale real-world patterns, the formally modeled theory empirically outclassed the three ‘veories’ . Verbal theorizing is an important step in the research process, but formal theorizing is an indispensable tool as well ##. Formal models are obviously wrong yet, they are useful mental prostheses simply because they are precisely and transparently wrong ##. Second, most psychology research nowadays emerges from convenience samples of undergraduates and Mechanical Turk workers. These samples are fine for some purposes, but representative samples are necessary for others. While our nationally representative sampling allows us to generalize beyond samples we can access for free (in lab) or cheap (MTurk), even a large nationally representative sample barely scratches the surface of human diversity ##. As such, we encourage similar analyses across different cultures ##. This is especially necessary because cultural cues themselves emerged as the strongest predictor of belief and disbelief. If this general pattern holds across societies, we predict that—beyond religion—veories developed by WEIRD researchers to explain the weird mental states of WEIRD participants will continue to ever more precisely answer only an outlier of an outlier of our most important scientific questions about human nature. 
 
 The importance of transmitted culture and context-biased cultural learning as a predictor of belief and disbelief cannot be overstated. Combined, the data we collected suggest that if you are guessing whether or not individuals are believers or atheists, you are better off knowing how their parents behaved—did they tithe? Pray regularly? Attend synagogue?—than how they themselves process information. Further, our interaction analyses suggest perhaps that sufficiently strong cultural exposure yields sustained religious commitment, even in the face of the putatively corrosive influence of cognitive reflection. Theoretically, these results fit well with dual inheritance theories of religion ##, as evolved cognitive capacities for cultural learning prove to be the most potent predictor of individual differences in the cross-culturally universal display of religious belief. In an applied sense, they also speak to the shared cognitive and cultural forces that generate, depending on circumstances, either belief or disbelief. Atheists are becoming increasingly common in the world, not because human psychology is fundamentally changing, but rather because evolved cognition remains stable in the face of a rapidly changing cultural context that is itself the product of a coevolutionary process. Faith emerges in some cultural contexts, and atheism is the natural result in others.
+
+```{r individual scatters, echo=F, message=F, error=F}
+# mentalizing
+
+mp <- ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
+  labs(x='Advanced\nMentalizing', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkred') +
+  stat_smooth(method=lm, color='darkred') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkred'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# motivation
+
+sp <- ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
+  labs(x='Existential\nSecurity', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkblue') +
+  stat_smooth(method=lm, color='darkblue') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkblue'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# CREDs
+
+cp <- ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
+  labs(x='Religious\nCREDs', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='purple3') +
+  stat_smooth(method=lm, color='purple3') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='purple3'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+
+# reflection cognitive style
+
+rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
+  labs(x='Cognitive\nReflection', y= 'Belief') +
+  geom_point(alpha=.2, position='jitter', color='darkgreen') +
+  stat_smooth(method=lm, color='darkgreen') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkgreen'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+
+ggarrange(mp, sp, cp, rp, 
+          labels = c("A", "B", "C", "D"),
+          ncol = 2, nrow = 2)
+```
+
+```{r individual tables, echo=FALSE}
+zeros <- read.csv('zero-order-posteriors.csv')
+zeros <- select(zeros, -X)
+
+zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
+zero.l <- zeros %>% sapply(low) %>% unname %>% round(digits = 2)
+zero.h <- zeros %>% sapply(high) %>% unname %>% round(digits = 2)
+zero.pr <- zeros %>% sapply(biggerZero) %>% unname %>% round(digits = 2) 
+
+pdi <- paste0('[', zero.l, ', ', zero.h, ']')
+
+
+v <- c('Low Mentalizing', 'Mentalizing (quad)', 'High Security', 'Low CREDs', 'High Reflection')
+
+zero.table <- data.frame(Variable = v, r = zero.m, HPDI= pdi, Pr = zero.pr)
+zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
+
+zerotab <- zero.table %>%
+  kable() %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "float_right") %>%
+  column_spec(1, bold = T)
+
+zerotab
+
+```
+
+```{r interaction plot, echo=FALSE, warning=FALSE, message=FALSE}
+
+dcrt_cred_cv <- select(d, disbelief, cred_lo, reflection, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+dcrt_cred_cv <- dcrt_cred_cv[complete.cases(dcrt_cred_cv),]
+
+dcrt_cred_cv$belief <- dcrt_cred_cv$disbelief * -1
+dcrt_cred_cv$cred <- dcrt_cred_cv$cred_lo * -1
+
+leastcred <- min(dcrt_cred_cv$cred)
+mostcred <- max(dcrt_cred_cv$cred)
+
+
+meanCRED_a <- intx$a
+meanCRED_b <- intx$b_ref
+minCRED_a <- intx$b_cred*leastcred + intx$a
+minCRED_b <- intx$b_ref + intx$b_int * leastcred
+maxCRED_a <- intx$b_cred * mostcred + intx$a
+maxCRED_b <- intx$b_ref + intx$b_int * mostcred
+
+cred_crt <- data.frame(meanCRED_a, meanCRED_b, minCRED_a, minCRED_b, maxCRED_a, maxCRED_b)
+
+
+
+
+# get means for lines
+
+mean.int <- mean(cred_crt$meanCRED_a)
+mean.slope <- mean(cred_crt$meanCRED_b)
+min.int <- mean(cred_crt$minCRED_a)
+min.slope <- mean(cred_crt$minCRED_b)
+max.int <- mean(cred_crt$maxCRED_a)
+max.slope <- mean(cred_crt$maxCRED_b)
+
+# get 20 smaples of each
+
+cred_crt <- cred_crt[sample(1:nrow(cred_crt)), ] #shuffle the deck
+
+mean.20int <- c(cred_crt$meanCRED_a[1:100])
+mean.20slope <- c(cred_crt$meanCRED_b[1:100])
+
+min.20int <- c(cred_crt$minCRED_a[1:100])
+min.20slope <- c(cred_crt$minCRED_b[1:100])
+
+max.20int <- c(cred_crt$maxCRED_a[1:100])
+max.20slope <- c(cred_crt$maxCRED_b[1:100])
+
+# to plot this shizzle
+
+d <- data.frame(x=c(min(dcrt_cred_cv$reflection), 0, max(dcrt_cred_cv$reflection)))
+
+brange <- max(dcrt_cred_cv$reflection) - min(dcrt_cred_cv$reflection)
+
+decs <- seq(from=0, to=1, by=.33)
+
+b.breaks <- min(dcrt_cred_cv$reflection) + decs*brange
+
+
+meancol <- 'black'
+mincol <- 'purple'
+maxcol <- 'hotpink'
+
+
+ggplot(dcrt_cred_cv, aes(x=reflection, y=belief)) +
+  geom_point(alpha=.05, position = 'jitter') +
+  scale_x_continuous(breaks=b.breaks, labels=c(0, 3, 6, 9)) +
+  labs(x="Cognitive Reflection\n(correct CRT items)", y="Belief") +
+  geom_abline(slope=mean.20slope, intercept=mean.20int, lwd=.2, col=meancol, alpha=.15) +
+  geom_abline(slope=min.20slope, intercept=min.20int, lwd=.2, col=mincol, alpha=.15) +
+  geom_abline(slope=max.20slope, intercept=max.20int, lwd=.2, col=maxcol, alpha=.15) +
+  geom_abline(slope=c(mean.slope, min.slope, max.slope), intercept=c(mean.int, min.int, max.int), col=c(meancol, mincol, maxcol), lwd=1.2) +
+  annotate("text", x = 0.3, y = c(.7, 0.1, -1.2), label = c("Max CRED", "Mean CRED", "Min CRED"), hjust=0, vjust=0, size=6, color=c(maxcol, meancol, mincol), family = "Times") +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_text(size = 16),
+        axis.title = element_text(size = 20),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.x = element_blank() ,
+        panel.grid.minor.x = element_blank() ,
+        panel.grid.major.y = element_blank() ,
+        panel.grid.minor.y = element_blank() ,
+        panel.border = element_rect(color="darkgrey"),
+        plot.margin = unit(c(1, 1, 1, 1), "lines")) 
+
+
+```
+
+
+```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE}
+post.b <-  full_cv_post %>% select( 'Lower\nMentalizing\n\n\n' = b_ment, 'Existential\nSecurity\n\n\n' = b_sec, 'Fewer\nCREDs\n\n\n' = b_cred, 'Cognitive\nReflection\n\n\n' = b_ref) 
+
+post.long.b <- gather( post.b, type, beta)
+
+post.long.b$type <- factor(post.long.b$type, levels=c(  'Existential\nSecurity\n\n\n', 'Lower\nMentalizing\n\n\n','Cognitive\nReflection\n\n\n',  'Fewer\nCREDs\n\n\n'))
+
+
+ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
+  geom_vline(xintercept = 0, color='darkgrey') +
+  geom_density_ridges(alpha = .7, scale = 1.9, rel_min_height = 0.01, size=0) +
+  labs(x = '\nAssociation With Disbelief\n(standardized beta)') +
+  scale_x_continuous(limits = c(-.1, .4)) +
+  scale_y_discrete(expand = expand_scale(add = c(0.3, 2))) +
+  scale_fill_manual(values = c('darkblue', 'darkred',   'darkgreen', 'purple3' )) +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16, color = c('darkblue', 'darkred',   'darkgreen', 'purple3' )),
+        axis.title = element_text(size = 20),
+        axis.ticks = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "none",
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey"),
+        axis.title.y = element_blank()
+  )
+
+
+```
+
+
+```{r full model table, echo=FALSE}
+
+
+fullPost <- full_cv_post %>% select(-X, -a, -sigma)
+
+fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
+fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
+fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
+
+
+beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits=2)
+beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits=2)
+beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits=2)
+hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
+Pr0 <- fullPost %>% sapply(biggerZero) %>% unname %>% round(digits=2)
+
+pred <- c('Low Mentalizing', 'Mentalizing (quad)', 'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
+
+fulltab <- data.frame(Variable = pred, Beta = beta, HPDI = hpdi, Pr = Pr0 )
+fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
+fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
+
+
+
+kable(fulltab, booktabs= T, caption = "Full Model Summary") %>%
+   kable_styling(full_width = F) %>%
+   add_indent(6:16)
+```
+
+
+```{r predictions table, echo=F}
+model <- c('Secularization', 'Cognitive Byproduct', 'Social Learning', 'Dual Inheritance')
+dis <- c('Sociology & Social Psych', 'Ev Psych & Cog Sci Rel', 'Cultural Evolution', 'Gene-Culture Coevolution')
+ment <- c(' ', '+ +', ' ', '+')
+sec <- c('+ + + +', '+', ' ',  'indirect')
+cred <- c(' ', ' ', '+ + + +', '+ + + +')
+ref <- c(' ', '+ + +', ' ', '+')
+
+predtab <- data.frame(
+  Theory = model, Discipline = dis, 
+  'Mindblind' = ment, 
+  'Apatheist' = sec,
+  'inCREDulous' = cred,
+  'Analytic' = ref)
+
+ 
+kable(predtab, booktabs= T, caption = "Predictions From Prominent  Theories", align = "r") %>%
+   column_spec(1, bold = T) %>%
+   kable_styling(full_width = T) 
+```
 
