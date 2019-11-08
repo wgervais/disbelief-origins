@@ -60,8 +60,7 @@ dref_nc <- dref_nc[complete.cases(dref_nc),]
 # combined zero order posteriors
 zeros <- read.csv('zero-order-posteriors.csv')
 
-# full posterior, long
-full_cv_post <- read.csv('full-posterior.csv')
+
 
 # interactions
 intx <- read.csv('CrtCREDPost.csv')
