@@ -15,7 +15,6 @@ library(xtable)
 library(ggpubr)
 library(kableExtra)
 library(knitr)
-library(formattable)
 
 # get data ----
 go <- read.csv('go.csv')
