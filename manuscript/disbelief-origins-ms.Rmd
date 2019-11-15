@@ -47,10 +47,9 @@ library(psych)
 ```{r data, include=FALSE}
 # get data ----
 
-
 fullmessy <- read.csv('gfk.csv')
 
-messy[messy == -1] <- NA
+fullmessy[fullmessy == -1] <- NA
 messy <- subset(fullmessy, Q12 == 2)  # Q 12 is a catch item. only keep 2s
 
 messy <- messy %>% rename(
@@ -70,6 +69,8 @@ messy <- messy %>% rename(
   vote2016 = PPPA1699,
   candidate2016 = PPPA1690
 )
+
+
 
 go <- read.csv('go.csv')
 
@@ -167,12 +168,12 @@ bin_p <- read.csv('binary-post.csv')
 dig <- 2
 
 
-bigger <- function(first, second, digits) {
+bigger <- function(first, second) {
   pr.big <- ifelse(first > second, 1, 0) %>% mean %>% round(digits = dig)
   return(pr.big)
 }
 
-biggerZero <- function(input, digits) {
+biggerZero <- function(input) {
   pr.big <- ifelse(input > 0, 1, 0) %>% mean %>% round(digits = dig)
 return(pr.big)
 }
@@ -201,6 +202,12 @@ printB <- function(input) {
 paste0(p, ", [", l, ", ", h, "]")
 }
 
+
+
+getA <- function(input){
+  theA <- psych::alpha(input, na.rm=T)$total[2] %>% unname %>% round(digits = dig)
+  return(theA)
+}
 ```
 
 \pagebreak
@@ -575,7 +582,6 @@ The importance of transmitted culture and context-biased cultural learning as a 
 # supernatural belief scale ----
 
 sbs <- select(messy, Q06_1:Q06_10)
-sbs_a <- alpha(sbs) %>% round(digits = dig) # good alphas. let's create some composites
 
 sbs_m <- apply(sbs, 1, mean) 
 
@@ -604,21 +610,13 @@ persp <- select(messy, Q09_1:Q09_7)
 persp$Q09_1 <- 8- persp$Q09_1
 persp$Q09_4 <- 8- persp$Q09_4
 
+pt_m <- apply(persp, 1, mean) 
 
-persp2 <- persp[complete.cases(persp),]
-cor(persp2)
-
-pt_a <- alpha(persp) %>% round(digits = dig) 
-
-
-pt_m <- apply(persp, 1, mean) %>% round(digits = dig) 
-pt_sd <- apply(persp, 1, sd) %>% round(digits = dig) 
 
 # CREDs ----
 
 cred <- select(messy, Q13_1:Q13_7)
 
-cred_a <- alpha(cred) %>% round(digits = dig) 
 cred_m <- apply(cred, 1, mean) 
 
 
@@ -638,16 +636,7 @@ mot$Q11_4 <- 5 - mot$Q11_4
 mot$Q11_7 <- 5 - mot$Q11_7 
 mot$Q11_9 <- 5 - mot$Q11_9
 
-
-
-mot2 <- mot[complete.cases(mot),]
-cor(mot2)
-
-mot_a <- alpha(mot, check.keys=F) %>% round(digits = dig) 
-
-
 mot_m <- apply(mot, 1, mean)
-mot_sd <- scale( apply(mot, 1, sd), center=T, scale=T)[,]
 
 
 # tolerance for ambiguity ----
@@ -667,18 +656,7 @@ tfa$Q16_12 <- 8 - tfa$Q16_12
 # 4 looks oddly worded. drop? '1.	I prefer familiar situations that are ambiguous.' WTF?
 tfa <- select(tfa, -Q16_4)
 
-
-
-tfa2 <- tfa[complete.cases(tfa),]
-cor(tfa2)
-
-alpha(tfa, check.keys=T)
-
-
 tfa_m <- apply(tfa, 1, mean)
-tfa_sd <- apply(tfa, 1, sd), center=T, scale=T)
-
-
 
 # personality ----
 # eXtraversion
@@ -687,14 +665,7 @@ eXtra <- select(messy, Q14_1:Q14_4)
 eXtra$Q14_2 <- 8- eXtra$Q14_2
 eXtra$Q14_3 <- 8- eXtra$Q14_3
 
-eXtra2 <- eXtra[complete.cases(eXtra),]
-cor(eXtra2)
-
-alpha(eXtra, check.keys=T)
-
-
 eXtra_m <- apply(eXtra, 1, mean)
-eXtra_sd <- apply(eXtra, 1, sd), center=T, scale=T)
 
 # Agreeableness
 Agree <- select(messy, Q14_5:Q14_8)
@@ -702,14 +673,7 @@ Agree <- select(messy, Q14_5:Q14_8)
 Agree$Q14_6 <- 8- Agree$Q14_6
 Agree$Q14_8 <- 8- Agree$Q14_8
 
-Agree2 <- Agree[complete.cases(Agree),]
-cor(Agree2)
-
-alpha(Agree, check.keys=T)
-
-
 Agree_m <- apply(Agree, 1, mean)
-Agree_sd <- apply(Agree, 1, sd), center=T, scale=T)
 
 # Conscientiousness
 Consc <- select(messy, Q14_9:Q14_12)
@@ -717,14 +681,7 @@ Consc <- select(messy, Q14_9:Q14_12)
 Consc$Q14_11 <- 8- Consc$Q14_11
 Consc$Q14_12 <- 8- Consc$Q14_12
 
-Consc2 <- Consc[complete.cases(Consc),]
-cor(Consc2)
-
-alpha(Consc, check.keys=T)
-
-
 Consc_m <- apply(Consc, 1, mean)
-Consc_sd <- apply(Consc, 1, sd)
 
 # Neuroticism
 Neuro <- select(messy, Q14_13:Q14_16)
@@ -732,15 +689,7 @@ Neuro <- select(messy, Q14_13:Q14_16)
 Neuro$Q14_14 <- 8- Neuro$Q14_14
 Neuro$Q14_16 <- 8- Neuro$Q14_16
 
-Neuro2 <- Neuro[complete.cases(Neuro),]
-cor(Neuro2)
-
-alpha(Neuro, check.keys=T)
-
-
 Neuro_m <- apply(Neuro, 1, mean)
-Neuro_sd <- apply(Neuro, 1, sd)
-
 
 # Openness
 Open <- select(messy, Q14_17:Q14_20)
@@ -749,14 +698,7 @@ Open$Q14_18 <- 8- Open$Q14_18
 Open$Q14_19 <- 8- Open$Q14_19
 Open$Q14_20 <- 8- Open$Q14_20
 
-Open2 <- Open[complete.cases(Open),]
-cor(Open2)
-
-alpha(Open, check.keys=T)
-
-
 Open_m <- apply(Open, 1, mean)
-Open_sd <- apply(Open, 1, sd), center=T, scale=T)
 
 # Honesty/Humility
 Hum <- select(messy, Q14_21:Q14_24)
@@ -766,43 +708,16 @@ Hum$Q14_22 <- 8- Hum$Q14_22
 Hum$Q14_23 <- 8- Hum$Q14_23
 Hum$Q14_24 <- 8- Hum$Q14_24
 
-Hum2 <- Hum[complete.cases(Hum),]
-cor(Hum2)
-
-alpha(Hum, check.keys=T)
-
-
 Hum_m <- apply(Hum, 1, mean)
-Hum_sd <- apply(Hum, 1, sd), center=T, scale=T)
 
-
-
-# clean up reversals/demographics/etc
-# recode belief in God to o=no, 1=yes, reverse church and prayer
-messy$god_y <- (messy$god_y-2) * -1
-messy$church <- 9- messy$church
-messy$pray <- 8- messy$pray
-
-
-# gender & orientation back to factors
-messy$gender_ident <- factor(messy$gender_ident, levels = c(1, 2, 3, 4, 5, 6), labels = c('female', 'male', 'Tfemale', 'Tmale', 'nonconf', 'nolist'))
-messy$sex_or <- factor(messy$gender_ident, levels = c(1, 2, 3, 4, 5, 6, 7, 8), labels = c('asexual', 'bisexual', 'gay', 'straight', 'lesbian', 'queer', 'unsure', 'nolist'))
-
-# STEM to 1 = yes, 0 = no
-messy$stem <- messy$stem - 1
-
-# vote 2016 to 1 = yes
-messy$vote2016 <- (messy$vote2016-2)*-1
-
-# voted for...
-messy$candidate2016 <- factor(messy$candidate2016, levels = c(1, 2, 3, 4, 5), labels = c('clinton', 'trump', 'third', 'non', NA))
-
-# binary gender
-female <- ifelse(messy$gender_ident == 'female', 1, 0)
 
 
 ```
 ## Sample
+
+mean of means `r mean(sbs_m)`
+mean of set `r mean(sbs)`
+alpha `r getA(sbs)`
 
 To obtain a nationally representative sample of Americans, we worked with Growth from Knowledge (GfK) and recruited a total sample of `r nrow(fullmessy)` individuals that were representative of the American population in terms of gender, age, race/ethnicity, education, census region, household income, home ownership status, and residence within a metropolitan area. We excluded `r nrow(fullmessy) - nrow(d)` participants who failed a manipulation check, leaving a total of `r nrow(d)` respondents. The demographics of these participants are described in Table 4.
 
