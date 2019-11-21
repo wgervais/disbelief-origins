@@ -265,7 +265,7 @@ predtab <- data.frame(
 kable(predtab, booktabs= T, caption = "Predictions From Prominent Theories", align=c("l", "l", rep("r", 4))) %>%
    kable_styling(full_width = F, position = "center") %>%
    column_spec(1, bold = T) %>%
-   footnote(general = "The number of + symbols indicates the strength with which a certain theory posits that each of the four types of atheism should lead to disbelief", number = c("mindblind = relatively lower in advanced mentalizing", "apatheist = relatively more existentially secure", "inCREDulous = exposed to relatively fewer religious CREDs", "Analytic = scoring relatively higher on cognitive reflection"))
+   footnote(general = "+ symbols indicate the predicted strength of each type of atheism, by theory", number = c("mindblind = relatively lower in advanced mentalizing", "apatheist = relatively more existentially secure", "inCREDulous = exposed to relatively fewer religious CREDs", "Analytic = scoring relatively higher on cognitive reflection"))
 ```
 
 # Results
@@ -354,15 +354,22 @@ inCREDulous <- (bin_p$a + bin_p$b_cred*minCRED) %>% logistic()
 Joes <- data.frame(Average, Analytic, inCREDulous)
 
 Joes$rr <- Joes$inCREDulous / Joes$Analytic
+
+a <- Joes$inCREDulous
+b <- 1- Joes$inCREDulous
+c <- Joes$Analytic
+d <- 1- Joes$Analytic
+
+or <- (a*d)/(b*c)
 ```
 
-We also measured religious disbelief with a simple binary (No, Yes) belief in God item. We ran our full model analysis as a logistic model predicting atheism rates on the binary measure. Results closely matched the full model using a continuous measure of disbelief. Aside from demographic covariates, only fewer religious CREDs, *beta* = `r printB(bin_p$b_cred)`, $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_cred)`, and more cognitive reflection, *beta* = `r printB(bin_p$b_ref)` = $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_ref)`, predicted atheism. However, inCREDulous atheism was more evident than analytic atheism. To illustrate, we considered the posterior produced by our model, marginalized at various levels of our predictors. Our model predicts that an otherwise completely typical person who absolutely maxed out performance on cognitive reflection would have about a 20% chance of being an atheist, $\mathrm{P}(atheism \mid analytic)$ = `r printB(Joes$Analytic)`. In contrast, someone of typical cognitive reflection but minimal religious CREDs would have a 30% chance of atheism, $\mathrm{P}(atheism \mid inCREDulous)$ = `r printB(Joes$inCREDulous)`. Simply put: the predicted prevalence of atheists is about 60% higher for pure inCREDulous atheism than for pure analytic atheism, *relative risk* = `r printB(Joes$rr)`, $\mathrm{P}(inCREDulous > analytic \mid data)$ = `r bigger(Joes$inCREDulous, Joes$Analytic)`.  This relative difference in predictive strength, replicated across continuous and binary measures of disbelief, is much more consistent with some common theoretical approaches than others.
+We also measured religious disbelief with a simple binary (No, Yes) belief in God item. We ran our full model analysis as a logistic model predicting atheism rates on the binary measure. Results closely matched the full model using a continuous measure of disbelief. Aside from demographic covariates, only fewer religious CREDs, *beta* = `r printB(bin_p$b_cred)`, $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_cred)`, and more cognitive reflection, *beta* = `r printB(bin_p$b_ref)` = $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_ref)`, predicted atheism. However, inCREDulous atheism was more evident than analytic atheism. To illustrate, we considered the posterior produced by our model, marginalized at various levels of our predictors. Our model predicts that an otherwise completely typical person who absolutely maxed out performance on cognitive reflection would have about a 20% chance of being an atheist, $\mathrm{P}(atheism \mid analytic)$ = `r printB(Joes$Analytic)`. In contrast, someone of typical cognitive reflection but minimal religious CREDs would have a 30% chance of atheism, $\mathrm{P}(atheism \mid inCREDulous)$ = `r printB(Joes$inCREDulous)`. Simply put: the predicted odds of atheism are about 90% higher for pure inCREDulous atheism than for pure analytic atheism, *odds ratio* = `r printB(or)`, $\mathrm{P}(inCREDulous > analytic \mid data)$ = `r bigger(or, 1)`.  This relative difference in predictive strength, replicated across continuous and binary measures of disbelief, is much more consistent with some common theoretical approaches than others.
 
 ## Hypothesized Interactions
 
 Next, we probed for preregistered interactions among the four factors ^[Preregistered analyses probing for interactions with mentalizing yielded nothing of particular note and are summarized in the Online Supplement.] finding an interaction between cultural learning and reflective cognitive style, $\beta$ = `r  printB(intx$b_int*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(intx$b_int)`. We considered the association between disbelief and reflective cognitive style among those comparatively high and low on credible cultural cues of religious belief (Figure 2), finding that reflective cognitive style primarily predicts religious disbelief among those who were also comparatively low in cultural exposure to credible religious cues of faith. Indeed, cognitive reflection moderately predicted religious disbelief among those with the fewest religious CREDs, $\beta$ = `r  printB(cred_crt$minCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$minCRED_b)`, but not at all among those highest in reliigious CREDs, $\beta$ = `r  printB(cred_crt$maxCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$maxCRED_b)`. These patterns highlight the interactive roles of cultural context and evolved intuitions on religious cognition, as predicted by dual inheritance theories.
 
-```{r interaction plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Cognitive reflection primarily predicts disbelief among individuals who are also relative low in exposure to religious CREDs. Lines reflect intercepts and slopes drawn from the posterior distribution and illustrate estimate uncertainty.'}
+```{r interaction plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Cognitive reflection primarily predicts disbelief among individuals who are also relative low in exposure to religious CREDs. Each cluster contains 100 regression lines drawn from the posterior to illustrate estimate uncertainty and regions of highest posterior density.'}
 
 # get means for lines
 
@@ -406,7 +413,7 @@ ggplot(dcrt_cred_cv, aes(x=reflection, y=(belief *-1))) +
   labs(x="Cognitive Reflection\n(correct CRT items)", y="Disbelief") +
   geom_abline(slope=min.20slope, intercept=min.20int, lwd=.2, col=mincol, alpha=.15) +
   geom_abline(slope=max.20slope, intercept=max.20int, lwd=.2, col=maxcol, alpha=.15) +
-  annotate("text", x = 0.3, y = c(1, -1), label = c("Least CREDs", "Most CREDS"), hjust=0, vjust=0, size=6, color=c(mincol, maxcol), family = "Times") +
+  annotate("text", x = 0.3, y = c(1, -1), label = c("Least CREDs", "Most CREDs"), hjust=0, vjust=0, size=6, color=c(mincol, maxcol), family = "Times") +
   theme_bw() +
   theme(text = element_text(family="Times"),
         axis.text = element_text(size = 16),
@@ -811,7 +818,7 @@ EconConservatismSD<-sd(messy$econ_cons, na.rm = T)
 ```
 ## Sample
 
-To obtain a nationally representative sample of Americans, we worked with Growth from Knowledge (GfK) and recruited a total sample of `r nrow(fullmessy)` individuals that were representative of the American population in terms of gender (`r (FemaleProp * 100) %>% round(digits = dig)`% female, `r (MaleProp * 100) %>% round(digits = dig)`% male, `r (AnotherGenderProp * 100) %>% round(digits = dig)`% listing another gender), age (*M* = `r AgeM %>% round(digits=dig)`, *SD* = `r AgeSD %>% round(digits=dig)`), race/ethnicity, education, census region, household income, home ownership status, and residence within a metropolitan area. We excluded `r nrow(fullmessy) - nrow(d)` participants who failed a manipulation check, leaving a total of `r nrow(d)` respondents. Participant demographics are described in Table 4.
+To obtain a nationally representative sample of Americans, we worked with Growth from Knowledge (GfK) and recruited a total sample of `r nrow(fullmessy)` individuals that were representative of the American population in terms of gender (`r (FemaleProp * 100) %>% round(digits = dig)`% female, `r (MaleProp * 100) %>% round(digits = dig)`% male, `r (AnotherGenderProp * 100) %>% round(digits = dig)`% listing another gender), age (*M* = `r AgeM %>% round(digits=dig)`, *SD* = `r AgeSD %>% round(digits=dig)`), race/ethnicity, education, census region, household income, home ownership status, and residence within a metropolitan area. We excluded `r nrow(fullmessy) - nrow(d)` participants who failed an attention check, leaving a total of `r nrow(d)` respondents. Participant demographics are described in Table 4.
 
 ```{r dem table, echo=FALSE}
 
@@ -872,6 +879,7 @@ We used Bayesian estimation throughout. Bayesian estimation allows us to evaluat
 \pagebreak
 # Acknowledgements
 This research was supported by a grant to WMG from the John Templeton Foundation (48275). The content is solely the responsibility of the authors and does not necessarily represent the official views of its funders. The funders had no role in study design, data collection and analysis, decision to publish or preparation of the manuscript.
+
 
 # Author Contributions
 WMG designed the study, with survey revision and implementation from MBN and SRS. WMG performed the primary analyses and NC performed descriptive analyses. WMG wrote the manuscript with NC. All authors approved the final manuscript.
