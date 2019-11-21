@@ -412,7 +412,9 @@ ggplot(dcrt_cred_cv, aes(x=reflection, y=(belief *-1))) +
   scale_x_continuous(breaks=b.breaks, labels=c(0, 3, 6, 9)) +
   labs(x="Cognitive Reflection\n(correct CRT items)", y="Disbelief") +
   geom_abline(slope=min.20slope, intercept=min.20int, lwd=.2, col=mincol, alpha=.15) +
+  geom_abline(slope=min.slope, intercept=min.int, lwd=.7, col=mincol, alpha=1) +
   geom_abline(slope=max.20slope, intercept=max.20int, lwd=.2, col=maxcol, alpha=.15) +
+  geom_abline(slope=max.slope, intercept=max.int, lwd=.7, col=maxcol, alpha=1) +
   annotate("text", x = 0.3, y = c(1, -1), label = c("Least CREDs", "Most CREDs"), hjust=0, vjust=0, size=6, color=c(mincol, maxcol), family = "Times") +
   theme_bw() +
   theme(text = element_text(family="Times"),
