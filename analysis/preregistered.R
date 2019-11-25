@@ -90,7 +90,7 @@ ment_cv <- map2stan(
     c(a, b_ment, b_mentQuad, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dment_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000
+  iter = 13000, warmup = 1000
 )
 
 plot(ment_cv)
@@ -114,7 +114,7 @@ ment_nc <- map2stan(
     c(a, b_ment, b_mentQuad) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dment_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 
@@ -141,7 +141,7 @@ sec_cv <- map2stan(
     c(a, b_sec, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dsec_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 plot(sec_cv)
@@ -163,7 +163,7 @@ sec_nc <- map2stan(
     c(a, b_sec) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dsec_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 
@@ -190,7 +190,7 @@ cred_cv <- map2stan(
     c(a, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dcred_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 plot(cred_cv)
@@ -212,7 +212,7 @@ cred_nc <- map2stan(
     c(a, b_cred) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dcred_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 
@@ -238,7 +238,7 @@ ref_cv <- map2stan(
     c(a, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dref_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 plot(ref_cv)
@@ -260,7 +260,7 @@ ref_nc <- map2stan(
     c(a, b_ref) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dref_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 
@@ -276,6 +276,9 @@ ref_nc_post <- as.data.frame(extract.samples(ref_nc))
 zeros <- data.frame('Mentalizing' = ment_nc_post$b_ment, 'MentQuad' = ment_nc_post$b_mentQuad, 'Security' = sec_nc_post$b_sec, 'CREDs' = cred_nc_post$b_cred, 'Reflection' = ref_nc_post$b_ref)
 write.csv(zeros, 'zero-order-posteriors.csv')
 # zeros <- read.csv('zero-order-posteriors.csv')
+
+zeros.cv <- data.frame('Mentalizing' = ment_cv_post$b_ment, 'MentQuad' = ment_cv_post$b_mentQuad, 'Security' = sec_cv_post$b_sec, 'CREDs' = cred_cv_post$b_cred, 'Reflection' = ref_cv_post$b_ref)
+write.csv(zeros.cv, 'zero-order-posteriors-cv.csv')
 
 zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
 zero.l <- zeros %>% sapply(low) %>% unname %>% round(digits = 2)
