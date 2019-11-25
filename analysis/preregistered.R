@@ -417,7 +417,10 @@ mentint_cv <- map2stan(
 plot(mentint_cv)
 precis(mentint_cv, prob=.97)
 
-mentint_cv_post <- as.data.frame(extract.samples(mentint_cv, n=145000))
+mentint <- as.data.frame(extract.samples(mentint_cv, n=145000))
+
+printB(mentint$b_mc_int)
+
 
 
 

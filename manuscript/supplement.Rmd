@@ -112,7 +112,6 @@ This entails a series of models:
    
 The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and essentially zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
 
-\pagebreak
 # 1. Individual Replications
 
 As the models without covariates are already summarized in the main document, here is the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still repicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. Table 1 summarizes the individual replication results.
@@ -141,10 +140,10 @@ kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Repli
 
 ```
 
-\pagebreak
+
 # 2. Relative Contributions
 
-The main document includes a full model with all key predictors and covariates predicting disbelief. Here, we report the model sans covariates for completeness with the preregistration. Again, not much changes. In this case, mindblind atheism appears even less important.
+The main document includes a full model with all key predictors and covariates predicting disbelief. Here, we report the model sans covariates for completeness with the preregistration. Again, not much changes. In this case, mindblind atheism appears even less important. Table 2 summarizes this model.
 
 ```{r relative model, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 # get data 
@@ -160,7 +159,7 @@ go$educZ <- scale(go$educ, center=T, scale=T)[,]
 go$femZ <- scale(go$female, scale=T, center = T)[,]
 go$econ_consZ <- scale(go$econ_cons, center=T, scale=T)[,]
 go$social_consZ <- scale(go$social_cons, center=T, scale=T)[,]
-summary(go)
+
 
 d <- select(go, 
             disbelief, 
@@ -169,6 +168,7 @@ d <- select(go,
             cred_lo, 
             reflection,
             ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+
 dfull_nc <- select(d, disbelief, ment_lo, security, cred_lo, reflection)
 dfull_nc <- dfull_nc[complete.cases(dfull_nc),]
 
@@ -179,9 +179,11 @@ full_nc <- map2stan(
     c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dfull_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000
 )
+
 full_nc_post <- as.data.frame(extract.samples(full_nc))
+
 ```
 
 ```{r relative table, echo=FALSE, message=FALSE, warning=FALSE}
@@ -208,7 +210,7 @@ kable(full.nc.table, booktabs= T, caption = "Full Model, No Covariates", align =
 
 ```
 
-\pagebreak
+
 ```{r mindblind intx, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 dmentint_cv <- select(d, disbelief, ment_lo, security, cred_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
 dmentint_cv <- dmentint_cv[complete.cases(dmentint_cv),]
@@ -230,7 +232,7 @@ mentint <- as.data.frame(extract.samples(mentint_cv, n=145000))
 
 # 3. Interactions: Mindblind Atheism
 
-We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alas, we did not find interactions between mindbline atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. This is in a sense unsurprising because mindblind atheism was not especially robust across alternative models throughout this project.
+We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alas, we did't find much of any interactions between mindblind atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. This is in a sense unsurprising because mindblind atheism was not especially robust across alternative models throughout this project.
 
 
 
