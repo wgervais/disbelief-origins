@@ -38,21 +38,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r packages, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
 library(rethinking)
 library(tidyverse)
+library(kableExtra)
 ```
 
 ```{r functions, echo=FALSE}
-# handy functions ----
+
+dig <- 2
 
 
 bigger <- function(first, second) {
-  pr.big <- mean(ifelse(first > second, 1, 0))
+  pr.big <- ifelse(first > second, 1, 0) %>% mean %>% round(digits = dig)
   return(pr.big)
 }
 
 biggerZero <- function(input) {
-  pr.big <- mean(ifelse(input > 0, 1, 0))
-  return(pr.big)
+  pr.big <- ifelse(input > 0, 1, 0) %>% mean(na.rm=T) %>% round(digits = dig)
+return(pr.big)
 }
+
 
 
 # a couple of quick functions for pulling HPDIs
@@ -69,137 +72,25 @@ high <- function(x){
   return(v)
 }
 
+
+printB <- function(input) {
+  p <- input %>% mean(na.rm=T) %>% round(digits = dig)
+  l <- input %>% low %>% round(digits = dig)
+  h <- input %>% high %>% round(digits = dig)
+paste0(p, ", [", l, ", ", h, "]")
+}
+
+
+
+getA <- function(input){
+  theA <- psych::alpha(input, na.rm=T)$total[2] %>% unname %>% round(digits = dig)
+  return(theA)
+}
 ```
 
-```{r data wrangling, echo=F}
-# get data ----
-go <- read.csv('go.csv')
 
-go$disbelief <- go$sbs_m * -1
-go$ment_lo <- go$pt_m * -1
-go$cred_lo <- go$cred_m * -1
-go$security <- go$mot_m * -1
-go$reflection <- go$crtZ
-go$ageZ <- scale(go$age, center=T, scale=T)[,]
-go$educZ <- scale(go$educ, center=T, scale=T)[,]
-go$femZ <- scale(go$female, scale=T, center = T)[,]
-go$econ_consZ <- scale(go$econ_cons, center=T, scale=T)[,]
-go$social_consZ <- scale(go$social_cons, center=T, scale=T)[,]
-
-
-d <- select(go, 
-            disbelief, 
-            ment_lo, 
-            security, 
-            cred_lo, 
-            reflection,
-            ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-
-
-# Lower advanced mentalizing ----
-# with covariates
-dment_cv <- select(d, disbelief, ment_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dment_cv <- dment_cv[complete.cases(dment_cv),]
-# without
-dment_nc <- select(d, disbelief, ment_lo)
-dment_nc <- dment_nc[complete.cases(dment_nc),]
-
-
-# existential security ----
-# with covariates
-dsec_cv <- select(d, disbelief, security, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dsec_cv <- dsec_cv[complete.cases(dsec_cv),]
-# sec no covariates
-dsec_nc <- select(d, disbelief, security)
-dsec_nc <- dsec_nc[complete.cases(dsec_nc),]
-
-# Fewer CREDS ----
-# with covariates
-dcred_cv <- select(d, disbelief, cred_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dcred_cv <- dcred_cv[complete.cases(dcred_cv),]
-# cred no covariates
-dcred_nc <- select(d, disbelief, cred_lo)
-dcred_nc <- dcred_nc[complete.cases(dcred_nc),]
-
-# cognitive reflection ----
-# with covariates
-dref_cv <- select(d, disbelief, reflection, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dref_cv <- dref_cv[complete.cases(dref_cv),]
-# ref no covariates
-dref_nc <- select(d, disbelief, reflection)
-dref_nc <- dref_nc[complete.cases(dref_nc),]
-
-# II. Relative contributions ----
-#  5.	We will run a model with all four factors predicting religion.
-
-# with covariates
-dfull_cv <- select(d, disbelief, ment_lo, security, cred_lo, reflection, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dfull_cv <- dfull_cv[complete.cases(dfull_cv),]
-# full no covariates
-dfull_nc <- select(d, disbelief, ment_lo, security, cred_lo, reflection)
-dfull_nc <- dfull_nc[complete.cases(dfull_nc),]
-
-# crt * cred, w/ covariates
-dcrt_cred_cv <- select(d, disbelief, cred_lo, reflection, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-dcrt_cred_cv <- dcrt_cred_cv[complete.cases(dcrt_cred_cv),]
-
-# mentalizing interactions ----
-
-```
-
-``` {r run models, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
-# mentalizing with covariates
-ment_cv <- map2stan(
-  alist(
-    disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_ment, b_mentQuad, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
-    sigma ~ dcauchy(0, 1)
-  ), data=dment_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 3000, warmup = 2000
-)
-ment_cv_post <- as.data.frame(extract.samples(ment_cv))
-
-# security with covariates
-sec_cv <- map2stan(
-  alist(
-    disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_sec*security + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_sec, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
-    sigma ~ dcauchy(0, 1)
-  ), data=dsec_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 3000, warmup = 2000, control=list(adapt_delta=0.9)
-)
-sec_cv_post <- as.data.frame(extract.samples(sec_cv))
-
-# low CREDs with covariates
-cred_cv <- map2stan(
-  alist(
-    disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
-    sigma ~ dcauchy(0, 1)
-  ), data=dcred_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 3000, warmup = 2000, control=list(adapt_delta=0.9)
-)
-cred_cv_post <- as.data.frame(extract.samples(cred_cv))
-
-# reflection with covariates
-ref_cv <- map2stan(
-  alist(
-    disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
-    sigma ~ dcauchy(0, 1)
-  ), data=dref_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 3000, warmup = 2000, control=list(adapt_delta=0.9)
-)
-ref_cv_post <- as.data.frame(extract.samples(ref_cv))
-
-
-```
 \pagebreak
-# Preregistration
+# The Preregistration
 
 We preregistered a series of analyses. Here, we lay out models and model summaries for all of these analyses. Here's what we preregistered:
 
@@ -219,46 +110,127 @@ This entails a series of models:
    6.	To test whether cognitive style’s effects differ across cultural learning, we will have a model in which CRT, CREDs, and their interaction predict religion.
    7.	To test the hypothesis that mentalizing is especially important in the context of cultural learning and motivation, we will have a model with mentalizing, CREDs, motivation and the mentalizing-by-CREDs and mentalizing-by-motivation interaction terms predicting religion.
    
-The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and essentially zero-order replication analyses. Here, we spell out all preregistered analyses not already included. 
+The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and essentially zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
 
-# 1. Does each factor independently replicate?
+\pagebreak
+# 1. Individual Replications
 
-## 1. We will replicate mentalizing in a model with mentalizing (linear and quadratic terms) predicting religion.
+As the models without covariates are already summarized in the main document, here is the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still repicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. Table 1 summarizes the individual replication results.
 
-### With covariates
+```{r replications table, echo=FALSE, warning=FALSE, message=FALSE}
 
-As the model without covariates is already summarized in the main document, here is the model including covariates. Nothing much changes from the main model reported in the main paper.
+zeros.cv <- read.csv('zero-order-posteriors-cv.csv')
+zeros.cv <- select(zeros.cv, -X)
 
-```{r ment table, echo=FALSE, warning=FALSE, message=FALSE}
+zero.m <- zeros.cv %>% sapply(mean) %>% unname %>% round(digits = dig)
+zero.l <- zeros.cv %>% sapply(low) %>% unname %>% round(digits = dig)
+zero.h <- zeros.cv %>% sapply(high) %>% unname %>% round(digits = dig)
+zero.pr <- zeros.cv %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
 
-mentPost <- ment_cv_post %>% select(-X, -a, -sigma)
-mentPost$b_female <- mentPost$b_female * -1 # reverse to score for male = disbelief
-mentPost$b_social_cons <- mentPost$b_social_cons * -1 # reverse so social lib = disbelief
-mentPost$b_Agree <- mentPost$b_Agree * -1 #reverse so low aggreable = disbelief
-
-
-beta <- mentPost %>% sapply(mean) %>% unname %>% round(digits = dig)
-beta.l <- mentPost %>% sapply(low) %>% unname %>% round(digits = dig)
-beta.h <- mentPost %>% sapply(high) %>% unname %>% round(digits = dig)
-hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
-Pr0 <- mentPost %>% sapply(biggerZero) %>% unname
-
-pred <- c('mindblind', 'mentalizing (quad)', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
-
-menttab <- data.frame(Variable = pred, Beta = beta, HPDI = hpdi, Pr = Pr0 )
-menttab$Pr[menttab$Pr == 1] <- '> 0.99'
-menttab$Pr[menttab$Pr == 0] <- '< 0.01'
+pdi <- paste0('[', zero.l, ', ', zero.h, ']')
 
 
+v <- c('mindblind', 'mentalizing (quad)', 'apatheism', 'inCREDulous', 'analytic')
 
-kable(menttab, booktabs= T, caption = "Predicting Disbelief: ment Model Summary", align=c("l", "r", "r", "r")) %>%
-   kable_styling(ment_width = F, position = "center") %>%
-   footnote(general = " ", number = c("Mentalizing (quad) = quadratic effect of mentalizing", "Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
-   
+zero.table <- data.frame(Variable = v, Beta = zero.m, HPDI= pdi, Pr = zero.pr)
+zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
+
+kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Replication Analyses With Covariates", align = c("l", "r", "r", "r")) %>%
+   kable_styling(full_width = F, position = "center") %>%
+   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
+
+```
+
+\pagebreak
+# 2. Relative Contributions
+
+The main document includes a full model with all key predictors and covariates predicting disbelief. Here, we report the model sans covariates for completeness with the preregistration. Again, not much changes. In this case, mindblind atheism appears even less important.
+
+```{r relative model, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+# get data 
+go <- read.csv('go.csv')
+
+go$disbelief <- go$sbs_m * -1
+go$ment_lo <- go$pt_m * -1
+go$cred_lo <- go$cred_m * -1
+go$security <- go$mot_m * -1
+go$reflection <- go$crtZ
+go$ageZ <- scale(go$age, center=T, scale=T)[,]
+go$educZ <- scale(go$educ, center=T, scale=T)[,]
+go$femZ <- scale(go$female, scale=T, center = T)[,]
+go$econ_consZ <- scale(go$econ_cons, center=T, scale=T)[,]
+go$social_consZ <- scale(go$social_cons, center=T, scale=T)[,]
+summary(go)
+
+d <- select(go, 
+            disbelief, 
+            ment_lo, 
+            security, 
+            cred_lo, 
+            reflection,
+            ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+dfull_nc <- select(d, disbelief, ment_lo, security, cred_lo, reflection)
+dfull_nc <- dfull_nc[complete.cases(dfull_nc),]
+
+full_nc <- map2stan(
+  alist(
+    disbelief ~ dnorm(mu, sigma),
+    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_ref*reflection,
+    c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref) ~ dnorm(0,1),
+    sigma ~ dcauchy(0, 1)
+  ), data=dfull_nc, WAIC = F, chains = 1, cores = 1,
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
+)
+full_nc_post <- as.data.frame(extract.samples(full_nc))
+```
+
+```{r relative table, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+full.ncs <- select(full_nc_post, b_ment, b_mentQuad, b_sec, b_cred, b_ref)
+
+full.nc.m <- full.ncs %>% sapply(mean) %>% unname %>% round(digits = dig)
+full.nc.l <- full.ncs %>% sapply(low) %>% unname %>% round(digits = dig)
+full.nc.h <- full.ncs %>% sapply(high) %>% unname %>% round(digits = dig)
+full.nc.pr <- full.ncs %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
+
+pdi <- paste0('[', full.nc.l, ', ', full.nc.h, ']')
+
+
+v <- c('mindblind', 'mentalizing (quad)', 'apatheism', 'inCREDulous', 'analytic')
+
+full.nc.table <- data.frame(Variable = v, Beta = full.nc.m, HPDI= pdi, Pr = full.nc.pr)
+full.nc.table$Pr[full.nc.table$Pr == 1] <- '>0.99'
+
+kable(full.nc.table, booktabs= T, caption = "Full Model, No Covariates", align = c("l", "r", "r", "r")) %>%
+   kable_styling(full_width = F, position = "center") %>%
+   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
+
+```
+
+\pagebreak
+```{r mindblind intx, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+dmentint_cv <- select(d, disbelief, ment_lo, security, cred_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+dmentint_cv <- dmentint_cv[complete.cases(dmentint_cv),]
+
+mentint_cv <- map2stan(
+  alist(
+    disbelief ~ dnorm(mu, sigma),
+    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_mc_int, b_mm_int,  b_ment, b_mentQuad, b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    sigma ~ dcauchy(0, 1)
+  ), data=dmentint_cv, WAIC = F, chains = 1, cores = 1,
+  iter = 13000, warmup = 1000
+)
+
+mentint <- as.data.frame(extract.samples(mentint_cv, n=145000))
+
 ```
 
 
+# 3. Interactions: Mindblind Atheism
 
+We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alas, we did not find interactions between mindbline atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. This is in a sense unsurprising because mindblind atheism was not especially robust across alternative models throughout this project.
 
 
 

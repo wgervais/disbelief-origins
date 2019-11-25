@@ -334,7 +334,7 @@ full_nc <- map2stan(
     c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dfull_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 22000, warmup = 2000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
 )
 
 
@@ -395,46 +395,29 @@ crt_cred_cv.2 <- map2stan(
 
 compare(crt_cred_cv, crt_cred_cv.2) #yes, the interaction is good to add
 
+# mentalizing interactions ----
 #  7.	mentalizing, CREDs, motivation and the mentalizing*CREDs and mentalizing*motivation interaction terms predicting religion.
 
 # ment int covariates
-dmentint_cv <- select(go, sbs_m, pt_m, pt_quad, mot_m, cred_m, age, educ, female, social_cons, econ_cons, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+dmentint_cv <- select(d, disbelief, ment_lo, security, cred_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
 dmentint_cv <- dmentint_cv[complete.cases(dmentint_cv),]
 summary(dmentint_cv)
 nrow(dmentint_cv)
 
 mentint_cv <- map2stan(
   alist(
-    sbs_m ~ dnorm(mu, sigma),
-    mu <- a + b_pt*pt_m + b_mot*mot_m + b_cred*cred_m + b_mentmot*pt_m*mot_m + b_mentcred*pt_m*cred_m + b_age*age + b_educ*educ + b_female*female + b_social_cons*social_cons + b_econ_cons*econ_cons + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_pt, b_mot, b_cred, b_mentmot, b_mentcred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    disbelief ~ dnorm(mu, sigma),
+    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_mc_int, b_mm_int,  b_ment, b_mentQuad, b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
-  ), data=dmentint_cv, WAIC = F, chains = 1, cores = 1, 
-  iter = 2000, warmup = 1000
+  ), data=dmentint_cv, WAIC = F, chains = 1, cores = 1,
+  iter = 13000, warmup = 1000
 )
 
-plot(full_cv)
-precis(full_cv)
+plot(mentint_cv)
+precis(mentint_cv, prob=.97)
 
-
-# ment int no covariates
-dmentint_nc <- select(go, sbs_m, pt_m, pt_quad, mot_m, cred_m)
-dmentint_nc <- dmentint_nc[complete.cases(dmentint_nc),]
-summary(dmentint_nc)
-nrow(dmentint_nc)
-
-mentint_nc <- map2stan(
-  alist(
-    sbs_m ~ dnorm(mu, sigma),
-    mu <- a + b_pt*pt_m + b_mot*mot_m + b_cred*cred_m + b_mentmot*pt_m*mot_m + b_mentcred*pt_m*cred_m ,
-    c(a, b_pt, b_mot, b_cred, b_mentmot, b_mentcred) ~ dnorm(0,1),
-    sigma ~ dcauchy(0, 1)
-  ), data=dmentint_nc, WAIC = F, chains = 1, cores = 1, 
-  iter = 2000, warmup = 1000
-)
-
-plot(full_cv)
-precis(full_cv)
+mentint_cv_post <- as.data.frame(extract.samples(mentint_cv, n=145000))
 
 
 
