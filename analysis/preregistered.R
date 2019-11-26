@@ -62,7 +62,7 @@ high <- function(x){
 # We will perform a series of 7 confirmatory tests on the full sample. Each model will be run twice: first with no covariates, then including age, gender, politics, education, & personality as covariates.
 
 # I. Does each factor independently replicate?
-#  1.	We will replicate mentalizing in a model with mentalizing (linear and quadratic terms) predicting religion.
+#  1.	We will replicate mentalizing in a model with mentalizing predicting religion.
 #  2.	We will replicate motivation in a model with the motivation items predicting religion.
 #  3.	We will replicate cultural learning in a model with CREDs predicting religion.
 #  4.	We will replicate cognitive style in a model with the CRT predicting religion.
@@ -75,7 +75,7 @@ high <- function(x){
 
 # I. Does each factor independently replicate? ----
 
-#   -1.	mentalizing challenges (linear and quadratic terms) predicting disbelief ----
+#   -1.	mentalizing challenges predicting disbelief ----
 
 # with covariates
 dment_cv <- select(d, disbelief, ment_lo, ageZ, educZ, femZ, social_consZ, econ_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
@@ -86,8 +86,8 @@ nrow(dment_cv)
 ment_cv <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_ment, b_mentQuad, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    mu <- a + b_ment*ment_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_ment,  b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dment_cv, WAIC = F, chains = 1, cores = 1,
   iter = 13000, warmup = 1000
@@ -110,8 +110,8 @@ nrow(dment_nc)
 ment_nc <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2,
-    c(a, b_ment, b_mentQuad) ~ dnorm(0,1),
+    mu <- a + b_ment*ment_lo,
+    c(a, b_ment) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dment_nc, WAIC = F, chains = 1, cores = 1,
   iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
@@ -273,11 +273,11 @@ ref_nc_post <- as.data.frame(extract.samples(ref_nc))
 
 # summarize individual zero orders ----
 
-zeros <- data.frame('Mentalizing' = ment_nc_post$b_ment, 'MentQuad' = ment_nc_post$b_mentQuad, 'Security' = sec_nc_post$b_sec, 'CREDs' = cred_nc_post$b_cred, 'Reflection' = ref_nc_post$b_ref)
+zeros <- data.frame('Mentalizing' = ment_nc_post$b_ment, 'Security' = sec_nc_post$b_sec, 'CREDs' = cred_nc_post$b_cred, 'Reflection' = ref_nc_post$b_ref)
 write.csv(zeros, 'zero-order-posteriors.csv')
 # zeros <- read.csv('zero-order-posteriors.csv')
 
-zeros.cv <- data.frame('Mentalizing' = ment_cv_post$b_ment, 'MentQuad' = ment_cv_post$b_mentQuad, 'Security' = sec_cv_post$b_sec, 'CREDs' = cred_cv_post$b_cred, 'Reflection' = ref_cv_post$b_ref)
+zeros.cv <- data.frame('Mentalizing' = ment_cv_post$b_ment,  'Security' = sec_cv_post$b_sec, 'CREDs' = cred_cv_post$b_cred, 'Reflection' = ref_cv_post$b_ref)
 write.csv(zeros.cv, 'zero-order-posteriors-cv.csv')
 
 zero.m <- zeros %>% sapply(mean) %>% unname %>% round(digits = 2)
@@ -288,7 +288,7 @@ zero.pr <- zeros %>% sapply(biggerZero) %>% unname %>% round(digits = 2)
 pdi <- paste0('[', zero.l, ', ', zero.h, ']')
 
 
-v <- c('Low Mentalizing', 'Mentalizing (quad)', 'High Security', 'Low CREDs', 'High Reflection')
+v <- c('Low Mentalizing',  'High Security', 'Low CREDs', 'High Reflection')
 
 zero.table <- data.frame(Variable = v, r = zero.m, HPDI= pdi, Pr = zero.pr)
 zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
@@ -306,11 +306,11 @@ nrow(dfull_cv)
 full_cv <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    mu <- a + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_ment, b_sec, b_cred, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
-  ), data=dfull_cv, WAIC = F, chains = 1, cores = 1,
-  iter = 152000, warmup = 2000, control=list(adapt_delta=0.9)
+  ), data=dfull_cv, WAIC = T, chains = 1, cores = 1,
+  iter = 15000, warmup = 2000, control=list(adapt_delta=0.9)
 )
 
 plot(full_cv)
@@ -319,6 +319,7 @@ precis(full_cv, prob=.97)
 full_cv_post <- as.data.frame(extract.samples(full_cv, n=145000))
 write.csv(full_cv_post, 'full-posterior.csv')
 # write.csv(full_cv_post, 'full_posterior_short.csv')
+
 
 # full no covariates
 dfull_nc <- select(d, disbelief, ment_lo, security, cred_lo, reflection)
@@ -330,11 +331,11 @@ nrow(dfull_nc)
 full_nc <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_ref*reflection,
-    c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref) ~ dnorm(0,1),
+    mu <- a + b_ment*ment_lo +  b_sec*security + b_cred*cred_lo + b_ref*reflection,
+    c(a, b_ment, b_sec, b_cred, b_ref) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dfull_nc, WAIC = F, chains = 1, cores = 1,
-  iter = 13000, warmup = 1000, control=list(adapt_delta=0.9)
+  iter = 13000, warmup = 1000
 )
 
 
@@ -407,8 +408,8 @@ nrow(dmentint_cv)
 mentint_cv <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_mc_int, b_mm_int,  b_ment, b_mentQuad, b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_mc_int, b_mm_int,  b_ment,  b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dmentint_cv, WAIC = F, chains = 1, cores = 1,
   iter = 13000, warmup = 1000
@@ -671,11 +672,43 @@ beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits=2)
 hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
 Pr0 <- fullPost %>% sapply(biggerZero) %>% unname %>% round(digits=2)
 
-pred <- c('Low Mentalizing', 'Mentalizing (quad)', 'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
+pred <- c('Low Mentalizing',  'Security', 'Low CREDs', 'Reflection', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
 
 fulltab <- data.frame(variable = pred, beta = beta, HPDI = hpdi, Pr = Pr0 )
 fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
 fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
 fulltab
 
+
+
+# quadratic ----
+full_cv <- map2stan(
+  alist(
+    disbelief ~ dnorm(mu, sigma),
+    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    sigma ~ dcauchy(0, 1)
+  ), data=dfull_cv, WAIC = T, chains = 1, cores = 1,
+  iter = 15000, warmup = 2000, control=list(adapt_delta=0.9)
+)
+
+plot(full_cv)
+precis(full_cv, prob=.97)
+
+full_cv_post <- as.data.frame(extract.samples(full_cv, n=145000))
+write.csv(full_cv_post, 'full-posterior.csv')
+# write.csv(full_cv_post, 'full_posterior_short.csv')
+
+# no quadratic
+full_cv_nq <- map2stan(
+  alist(
+    disbelief ~ dnorm(mu, sigma),
+    mu <- a + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_ment, b_sec, b_cred, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    sigma ~ dcauchy(0, 1)
+  ), data=dfull_cv, WAIC = T, chains = 1, cores = 1,
+  iter = 15000, warmup = 2000
+)
+
+compare(full_cv, full_cv_nq) # better off without quadratic, which is hot smelly garbage of a polynomial mess that doesn't do shit anyways. so let's not. thanks for reading this.
 
