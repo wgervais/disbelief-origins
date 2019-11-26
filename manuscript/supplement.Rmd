@@ -112,6 +112,9 @@ This entails a series of models:
    
 The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and essentially zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
 
+## Mentalizing: Quadratic Term
+We initially preregistered inclusion of quadratic terms for mentalizing to test for the possibility that only extreme low advanced mentalizing is associated with disbelief. After the preregistration but before data collection and analysis, we realized that the polynomial approach was a very poor test of this idea and invites model overfitting [@mcelreathStatisticalRethinkingBayesian2016]. The preregistered model including a quadratic for mentalizing was theoretically dubious and statistically naive, so we left it out of main analyses. We checked a few of the primary models to see if inclusion of a quadratic did much. It did not. Information criteria suggested that models were always better without a quadratic term for mentalizing, and the quadratic term itself never amounted to much. Additional exploration about a possible low-range mentalizing blip in atheism may warrant future research with a statistically appropriate model.
+
 \pagebreak
 # 1. Individual Replications
 
@@ -130,7 +133,7 @@ zero.pr <- zeros.cv %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
 pdi <- paste0('[', zero.l, ', ', zero.h, ']')
 
 
-v <- c('mindblind', 'mentalizing (quad)', 'apatheism', 'inCREDulous', 'analytic')
+v <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic')
 
 zero.table <- data.frame(Variable = v, Beta = zero.m, HPDI= pdi, Pr = zero.pr)
 zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
@@ -176,8 +179,8 @@ dfull_nc <- d %>% select(disbelief, ment_lo, security, cred_lo, reflection) %>% 
 full_nc <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_ref*reflection,
-    c(a, b_ment, b_mentQuad, b_sec, b_cred, b_ref) ~ dnorm(0,1),
+    mu <- a + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_ref*reflection,
+    c(a, b_ment, b_sec, b_cred, b_ref) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dfull_nc, WAIC = F, chains = 1, cores = 1,
   iter = 13000, warmup = 1000
@@ -190,7 +193,7 @@ full_nc_post <- as.data.frame(extract.samples(full_nc))
 ```{r relative table, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-full.ncs <- select(full_nc_post, b_ment, b_mentQuad, b_sec, b_cred, b_ref)
+full.ncs <- select(full_nc_post, b_ment, b_sec, b_cred, b_ref)
 
 full.nc.m <- full.ncs %>% sapply(mean) %>% unname %>% round(digits = dig)
 full.nc.l <- full.ncs %>% sapply(low) %>% unname %>% round(digits = dig)
@@ -200,7 +203,7 @@ full.nc.pr <- full.ncs %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
 pdi <- paste0('[', full.nc.l, ', ', full.nc.h, ']')
 
 
-v <- c('mindblind', 'mentalizing (quad)', 'apatheism', 'inCREDulous', 'analytic')
+v <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic')
 
 full.nc.table <- data.frame(Variable = v, Beta = full.nc.m, HPDI= pdi, Pr = full.nc.pr)
 full.nc.table$Pr[full.nc.table$Pr == 1] <- '>0.99'
@@ -219,8 +222,8 @@ dmentint_cv <- dmentint_cv[complete.cases(dmentint_cv),]
 mentint_cv <- map2stan(
   alist(
     disbelief ~ dnorm(mu, sigma),
-    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_mentQuad*ment_lo^2 + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
-    c(a, b_mc_int, b_mm_int,  b_ment, b_mentQuad, b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
+    mu <- a + b_mc_int*ment_lo*cred_lo + b_mm_int*ment_lo*security + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
+    c(a, b_mc_int, b_mm_int,  b_ment, b_sec, b_cred, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
   ), data=dmentint_cv, WAIC = F, chains = 1, cores = 1,
   iter = 13000, warmup = 1000
