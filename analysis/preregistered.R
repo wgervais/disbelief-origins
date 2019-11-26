@@ -309,8 +309,8 @@ full_cv <- map2stan(
     mu <- a + b_ment*ment_lo + b_sec*security + b_cred*cred_lo + b_ref*reflection + b_age*ageZ + b_educ*educZ + b_female*femZ + b_social_cons*social_consZ + b_econ_cons*econ_consZ + b_eXtra*eXtra_m + b_Consc*Consc_m + b_Neuro*Neuro_m + b_Agree*Agree_m  + b_Open*Open_m + b_Hum*Hum_m,
     c(a, b_ment, b_sec, b_cred, b_ref, b_age, b_educ, b_female, b_social_cons, b_econ_cons, b_eXtra, b_Consc, b_Neuro, b_Agree, b_Open, b_Hum) ~ dnorm(0,1),
     sigma ~ dcauchy(0, 1)
-  ), data=dfull_cv, WAIC = T, chains = 1, cores = 1,
-  iter = 15000, warmup = 2000, control=list(adapt_delta=0.9)
+  ), data=dfull_cv, WAIC = F, chains = 3, cores = 3,
+  iter = 65000, warmup = 2000, control=list(adapt_delta=0.9)
 )
 
 plot(full_cv)
