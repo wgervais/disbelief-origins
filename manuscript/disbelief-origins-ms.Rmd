@@ -20,7 +20,7 @@ header-includes:
 indent: true
 author:
    - Will M. Gervais^[University of Kentucky, Psychology, will.gervais@gmail.com]
-   - Maxine B. Najle^[Blue Labs Analytics, Washington, D.C.]
+   - Maxine B. Najle^[BlueLabs Analytics, Washington, D.C.]
    - Sarah R. Schiavone^[University of California-Davis, Psychology]
    - Nava Caluori^[University of Virginia, Psychology]
 
@@ -38,7 +38,6 @@ library(rethinking)
 library(tidyverse)
 library(ggridges)
 library(xtable)
-library(ggpubr)
 library(kableExtra)
 library(knitr)
 library(citr)
@@ -216,7 +215,7 @@ getA <- function(input){
 
 # Abstract
 
-**Religion is a core feature of human nature, yet a comprehensive scientific account of religion must account for religious disbelief. Despite potentially drastic overreporting of religiosity [@gervaisHowManyAtheists2018], a third of the world’s 7 billion human inhabitants may actually be atheists—merely people who do not believe in God or gods. The origins of disbelief thus present a key testing ground for theories of religion. Here, we evaluate the predictions of four theoretical approaches to the origins of disbelief, and find considerable support for a dual inheritance (gene-culture coevolutionary) model. Our dual inheritance model [@norenzayanOriginsReligiousDisbelief2013] derives from distinct literatures addressing the putative 1) core social cognitive faculties that enable mental representation of gods [@purzyckiEcologicalTheoryGods2016; @gervaisPerceivingMindsGods2013; @norenzayanMentalizingDeficitsConstrain2012; @willardCognitiveBiasesExplain2013], 2) the challenges to existential security that motivate people to treat some god candidates as strategically important [@kayGodGovernmentTesting2008; @grayBlamingGodOur2010], 3) evolved cultural learning processes that influence which god candidates naïve learners treat as real rather than imaginary [@lanmanReligiousActionsSpeak2017; @gervaisZeusProblemWhy2010; @gervaisLearnedFaithInfluences2015; @lanmanImportanceReligiousDisplays2012], and 4) the intuitive processes that sustain belief in gods [@boyerBeingHumanReligion2008; @kelemenAreChildrenIntuitive2004] and the cognitive reflection that may sometimes undermine it [@pennycookAnalyticCognitiveStyle2012; @shenhavDivineIntuitionCognitive2012; @pennycookAtheistsAgnosticsAre2016]. We explore the varied origins of religious disbelief by treating these factors simultaneously in a large nationally representative (USA, *N* = `r nrow(d)`) dataset with preregistered analyses. Combined, we find that receiving few cultural cues of religious commitment is the most potent predictor of religious disbelief, $\beta$ = `r  mean(full_cv_post$b_cred) %>% round(digits = dig)`, followed distantly by reflective cognitive style, $\beta$ = `r  mean(full_cv_post$b_ref) %>% round(digits = dig)`, and less advanced mentalizing, $\beta$ = `r  mean(full_cv_post$b_ment) %>% round(digits = dig)`. Few cultural cues of faith predicted about a 60% higher atheism rate than did peak cognitive reflecion. Further, cognitive reflection may primarily predict reduced religious belief among individuals who witness relatively fewer credible contextual cues of faith in others. This work empirically unites four distinct literatures addressing the origins of religious disbelief, highlights the utility of considering both evolved cognition and cultural learning in religious transmission, emphasizes the dual roles of content-and context-biased social learning [@willardMemoryBeliefTransmission2016], and sheds light on the shared psychological mechanisms that underpin both religious belief and disbelief. **
+**Religion is a core feature of human nature, yet a comprehensive scientific account of religion must account for religious disbelief. Despite potentially drastic overreporting of religiosity [@gervaisHowManyAtheists2018], a third of the world’s 7 billion human inhabitants may actually be atheists—merely people who do not believe in God or gods. The origins of disbelief thus present a key testing ground for theories of religion. Here, we evaluate the predictions of four of the most prominent theoretical approaches to the origins of disbelief, and find considerable support for a gene-culture coevolutionary model. This dual inheritance model [@norenzayanOriginsReligiousDisbelief2013] derives from distinct literatures addressing the putative 1) core social cognitive faculties that enable mental representation of gods [@purzyckiEcologicalTheoryGods2016; @gervaisPerceivingMindsGods2013; @norenzayanMentalizingDeficitsConstrain2012; @willardCognitiveBiasesExplain2013], 2) the challenges to existential security that motivate people to treat some god candidates as strategically important [@kayGodGovernmentTesting2008; @grayBlamingGodOur2010], 3) evolved cultural learning processes that influence which god candidates naïve learners treat as real rather than imaginary [@lanmanReligiousActionsSpeak2017; @gervaisZeusProblemWhy2010; @gervaisLearnedFaithInfluences2015; @lanmanImportanceReligiousDisplays2012], and 4) the intuitive processes that sustain belief in gods [@boyerBeingHumanReligion2008; @kelemenAreChildrenIntuitive2004] and the cognitive reflection that may sometimes undermine it [@pennycookAnalyticCognitiveStyle2012; @shenhavDivineIntuitionCognitive2012; @pennycookAtheistsAgnosticsAre2016]. We explore the varied origins of religious disbelief by treating these factors simultaneously in a large nationally representative (USA, *N* = `r nrow(d)`) dataset with preregistered analyses. Combined, we find that witnessing fewer credible cultural cues of religious commitment is the most potent predictor of religious disbelief, $\beta$ = `r  mean(full_cv_post$b_cred) %>% round(digits = dig)`, followed distantly by reflective cognitive style, $\beta$ = `r  mean(full_cv_post$b_ref) %>% round(digits = dig)`, and less advanced mentalizing, $\beta$ = `r  mean(full_cv_post$b_ment) %>% round(digits = dig)`. Low cultural exposure to faith predicted about 90% higher odds of atheism than did peak cognitive reflecion. Further, cognitive reflection predicted reduced religious belief only among individuals who witness relatively fewer credible contextual cues of faith in others. This work empirically unites four distinct literatures addressing the origins of religious disbelief, highlights the utility of considering both evolved cognition and cultural learning in religious transmission, emphasizes the dual roles of content-and context-biased social learning [@willardMemoryBeliefTransmission2016], and sheds light on the shared psychological mechanisms that underpin both religious belief and disbelief. **
 
 
 
@@ -270,8 +269,8 @@ kable(predtab, booktabs= T, caption = "Predictions From Prominent Theories", ali
 
 # Results
 
-## Relative Contributions
-Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we conducted two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model (see Table 2 and Figure 1), few credible displays of faith proved to be by far the most powerful predictor of religious disbelief. Credibility enhancing displays of faith predict belief, and their absence predicts atheism, $\beta$ = `r  printB(full_cv_post$b_cred)`^[Values in brackets are 97% highest posterior density interval (HPDI).], $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_cred)`^[$\mathrm{P}(\beta > 0 \mid data)$ = 1 indicates a posterior probability exceeding .99.]. Cognitive reflection remained a consistent predictor of religious disbelief, $\beta$ = `r  printB(full_cv_post$b_ref)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ref)`, but following earlier cross-cultural work [@gervaisAnalyticAtheismCrossculturally2018] its predictive power was quite meager. Mentalizing challenges were only weakly associated with disbelief, $\beta$ = `r  printB(full_cv_post$b_ment)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ment)`, and existential security predicted essentially nothing. ^[Throughout, we also preregistered inclusion of a possible quadratic relationship between mentalizing and disbelief. In the years between preregistration and data collection/analysis, we realized that the preregistered polynomial analysis was nigh useless, so we depart from preregistration and don't analyze the quadratic here. When we added the quadratic to some models for robustness checks, it never predicted much of anything, and per information criteria never produced a stronger model.]
+## I. Relative Contributions
+Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we conducted two analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model predicting a continuous multi-item measure of religious disbelief (see Measures for details), witnessing fewer credible displays of faith proved to be by far the most powerful predictor of religious disbelief (see Table 2 and Figure 1). Credibility enhancing displays of faith predict belief, and their absence predicts atheism, $\beta$ = `r  printB(full_cv_post$b_cred)`^[Values in brackets are 97% highest posterior density interval (HPDI).], $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_cred)`^[$\mathrm{P}(\beta > 0 \mid data)$ = 1 indicates a posterior probability exceeding .99.]. Cognitive reflection remained a consistent predictor of religious disbelief, $\beta$ = `r  printB(full_cv_post$b_ref)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ref)`, but following earlier cross-cultural work [@gervaisAnalyticAtheismCrossculturally2018] its predictive power was quite meager. Mentalizing challenges^[Throughout, we also preregistered inclusion of a possible quadratic relationship between mentalizing and disbelief. In the years between preregistration and data collection/analysis, we realized that the preregistered polynomial analysis was nigh useless, so we depart from preregistration and don't analyze the quadratic here. When we added the quadratic to some models for robustness checks, it never predicted much of anything, and per information criteria never produced a stronger model.] were only weakly associated with disbelief, $\beta$ = `r  printB(full_cv_post$b_ment)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ment)`, and existential security predicted essentially nothing. 
 
 ```{r full model table, echo=FALSE}
 
@@ -365,9 +364,9 @@ or <- (a*d)/(b*c)
 
 We also measured religious disbelief with a simple binary (No, Yes) belief in God item. We ran our full model analysis as a logistic model predicting atheism rates on the binary measure. Results closely matched the full model using a continuous measure of disbelief. Aside from demographic covariates, only fewer religious CREDs, *beta* = `r printB(bin_p$b_cred)`, $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_cred)`, and more cognitive reflection, *beta* = `r printB(bin_p$b_ref)` = $\mathrm{P}(beta > 0 \mid data)$ = `r biggerZero(bin_p$b_ref)`, predicted atheism. However, inCREDulous atheism was more evident than analytic atheism. To illustrate, we considered the posterior produced by our model, marginalized at various levels of our predictors. Our model predicts that an otherwise completely typical person who absolutely maxed out performance on cognitive reflection would have about a 20% chance of being an atheist, $\mathrm{P}(atheism \mid analytic)$ = `r printB(Joes$Analytic)`. In contrast, someone of typical cognitive reflection but minimal religious CREDs would have a 30% chance of atheism, $\mathrm{P}(atheism \mid inCREDulous)$ = `r printB(Joes$inCREDulous)`. Simply put: the predicted odds of atheism are about 90% higher for pure inCREDulous atheism than for pure analytic atheism, *odds ratio* = `r printB(or)`, $\mathrm{P}(inCREDulous > analytic \mid data)$ = `r bigger(or, 1)`.  This relative difference in predictive strength, replicated across continuous and binary measures of disbelief, is much more consistent with some common theoretical approaches than others.
 
-## Hypothesized Interactions
+## II. Hypothesized Interactions
 
-Next, we probed for preregistered interactions among the four factors ^[Preregistered analyses probing for interactions with mentalizing yielded nothing of particular note and are summarized in the Online Supplement.] finding an interaction between cultural learning and reflective cognitive style, $\beta$ = `r  printB(intx$b_int*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(intx$b_int)`. We considered the association between disbelief and reflective cognitive style among those comparatively high and low on credible cultural cues of religious belief (Figure 2), finding that reflective cognitive style primarily predicts religious disbelief among those who were also comparatively low in cultural exposure to credible religious cues of faith. Indeed, cognitive reflection moderately predicted religious disbelief among those with the fewest religious CREDs, $\beta$ = `r  printB(cred_crt$minCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$minCRED_b)`, but not at all among those highest in reliigious CREDs, $\beta$ = `r  printB(cred_crt$maxCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$maxCRED_b)`. These patterns highlight the interactive roles of cultural context and evolved intuitions on religious cognition, as predicted by dual inheritance theories.
+Next, we probed for preregistered interactions among the four factors ^[Preregistered analyses probing for interactions with mentalizing yielded nothing of particular note and are summarized in the Online Supplement.] finding an interaction between cultural learning and reflective cognitive style, $\beta$ = `r  printB(intx$b_int*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(intx$b_int)`. We considered the association between disbelief and reflective cognitive style among those comparatively high and low on credible cultural cues of religious belief (Figure 2), finding that reflective cognitive style primarily predicts religious disbelief among those who were also comparatively low in cultural exposure to credible religious cues of faith. Indeed, cognitive reflection moderately predicted religious disbelief among those with the fewest religious CREDs, $\beta$ = `r  printB(cred_crt$minCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$minCRED_b)`, but not at all among those highest in religious CREDs, $\beta$ = `r  printB(cred_crt$maxCRED_b*-1)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(cred_crt$maxCRED_b)`. These patterns highlight the interactive roles of cultural context and evolved intuitions on religious cognition, as predicted by dual inheritance theories.
 
 ```{r interaction plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Cognitive reflection primarily predicts disbelief among individuals who are also relative low in exposure to religious CREDs. Each cluster contains 100 regression lines drawn from the posterior to illustrate estimate uncertainty and regions of highest posterior density.'}
 
@@ -434,7 +433,7 @@ ggplot(dcrt_cred_cv, aes(x=reflection, y=(belief *-1))) +
 
 ```
 
-## Individual Replications
+## III. Individual Replications
 
 Finally, we tested each candidate factor in isolation, merely to replicate previous work. Previous work has independently correlated indices of mentalizing, existential security, religious CREDs, and cognitive style with various measures of religious belief. We follow these efforts, and present individual analyses in which we see if established patterns replicate in a large nationally representative sample. In individual replication analyses (Table 3), inCREDulous atheism, analytic atheism, and to a lesser extent mindblind atheism replicated previous work. Apatheism was not evident in this sample. That one of the candidate factors culled from existing literature did not appear as a robust predictor may suggest tempered enthusiasm for its utility as a predictora of individual differences in religiosity more broadly, although existential security is still quite useful in analyzing larger-scale regional and international trends.
 
@@ -452,103 +451,15 @@ pdi <- paste0('[', zero.l, ', ', zero.h, ']')
 
 v <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic')
 
-zero.table <- data.frame(Variable = v, Beta = zero.m, HPDI= pdi, Pr = zero.pr)
+zero.table <- data.frame(Variable = v, r = zero.m, HPDI= pdi, Pr = zero.pr)
 zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
 
 kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Replication Analyses", align = c("l", "r", "r", "r")) %>%
    kable_styling(full_width = F, position = "center") %>%
-   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
+   footnote(general = " ", number = c("HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
 
 ```
-```{r individual scatters, echo=F, message=F, error=F, fig.cap='Scatterplots for individual replication models'}
-# mentalizing
 
-mp <- ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
-  labs(x='Advanced\nMentalizing', y= 'Belief') +
-  geom_point(alpha=.1, position='jitter', color='darkred') +
-  stat_smooth(method=lm, color='darkred') +
-  theme_bw() +
-  theme(text = element_text(family="Times"),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 20, color='darkred'),
-        axis.title.y = element_text(size = 20),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(),
-        panel.border = element_rect(color="darkgrey")
-  )
-
-# motivation
-
-sp <- ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
-  labs(x='Existential\nSecurity', y= 'Belief') +
-  geom_point(alpha=.1, position='jitter', color='darkblue') +
-  stat_smooth(method=lm, color='darkblue') +
-  theme_bw() +
-  theme(text = element_text(family="Times"),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 20, color='darkblue'),
-        axis.title.y = element_text(size = 20),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(),
-        panel.border = element_rect(color="darkgrey")
-  )
-
-# CREDs
-
-cp <- ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
-  labs(x='Religious\nCREDs', y= 'Belief') +
-  geom_point(alpha=.1, position='jitter', color='purple3') +
-  stat_smooth(method=lm, color='purple3') +
-  theme_bw() +
-  theme(text = element_text(family="Times"),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 20, color='purple3'),
-        axis.title.y = element_text(size = 20),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(),
-        panel.border = element_rect(color="darkgrey")
-  )
-
-
-# reflection cognitive style
-
-rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
-  labs(x='Cognitive\nReflection', y= 'Belief') +
-  geom_point(alpha=.1, position='jitter', color='darkgreen') +
-  stat_smooth(method=lm, color='darkgreen') +
-  theme_bw() +
-  theme(text = element_text(family="Times"),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 20, color='darkgreen'),
-        axis.title.y = element_text(size = 20),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.background = element_blank(),
-        plot.background = element_blank(),
-        panel.border = element_rect(color="darkgrey")
-  )
-
-
-# ggarrange(mp, sp, cp, rp, labels = c("A", "B", "C", "D"), ncol = 2, nrow = 2)
-```
 
 # Discussion
 
@@ -566,7 +477,7 @@ Finally, this work has implications beyond religion. Presumably, many beliefs ar
 
 ## Metascientific Implications
 
-This work suggests three broader meta-scientific points. First, we illustrates a sort of *replication-plus* approach to  forensically evaluating the literature while simultaneously testing and advancing theory. We conducted preregistered replications of four distinct findings from four different literatures, attesting to their relative strength or weakness. This is of course intrinsically valuable. However, these four replications gain theoretical significance when combined, as we were able to directly evaluate the suitability of four prominent theoretical perspectives on the origins of disbelief. *Replication-plus* approaches may prove similarly useful in other domains. Although a Registered Replication Report format has taken central stage in the psychology metascience world, alternative approaches and viewpoints on replication and methodology may be beneficial [@devezerScientificDiscoveryModelcentric2019; @oconnorScientificPolarization2018]. Second, of the four candidate factors we tested, one (credibility enhancing displays) is derived from formal theoretical modeling in gene-culture coevolution, while the other three emerged from verbal argumentation. In terms of predicting large-scale real-world patterns, the formally modeled theory empirically outclassed the three ‘veories’ ^['veories' are verbal theories, the intuitive verbal models that predominate much of psychology, and are a useful first step in formal theorizing.]. Verbal theorizing is an important step in the research process, but formal theorizing is an indispensable tool as well [@smaldinoModelsAreStupid2017]. Formal models are obviously wrong yet, they are useful mental prostheses simply because they are precisely and transparently wrong [@lalandSenseNonsenseEvolutionary2011; @smaldinoModelsAreStupid2017]. Further development in theory can circumvent methodological challenges to replicability [@muthukrishnaProblemTheory2019; @smaldinoBetterMethodsCan2019], sharpen thinking beyond statistical desiderada [@navarroDevilDeepBlue2018], and spur scientific discovery [@devezerScientificDiscoveryModelcentric2019]. Third, most psychology research nowadays emerges from convenience samples of undergraduates and Mechanical Turk workers. These samples are fine for some purposes, but representative samples are necessary for others. While our nationally representative sampling allows us to generalize beyond samples we can access for free (in lab) or cheap (MTurk), even a large nationally representative sample barely scratches the surface of human diversity [@radPsychologyHomoSapiens2018; @henrichWeirdestPeopleWorld2010]. As such, we encourage similar analyses across different cultures [@willardTestingTheoriesSecularization2017]. This is especially necessary because cultural cues themselves emerged as the strongest predictor of belief and disbelief. If this general pattern holds across societies, we predict that—beyond religion—veories developed by WEIRD researchers to explain the weird mental states of WEIRD participants will continue to ever more precisely answer only an outlier of an outlier of our most important scientific questions about human nature. 
+This work suggests three broader meta-scientific points. First, we illustrates a sort of *replication-plus* approach to  forensically evaluating the literature while simultaneously testing and advancing theory. We conducted preregistered replications of four distinct findings from four different literatures, attesting to their relative strength or weakness. This is of course intrinsically valuable. However, these four replications gain theoretical significance when combined, as we were able to directly evaluate the suitability of four prominent theoretical perspectives on the origins of disbelief. *Replication-plus* approaches may prove similarly useful in other domains. Although a Registered Replication Report format has taken central stage in the psychology metascience world, alternative approaches and viewpoints on replication and methodology may be beneficial [@devezerScientificDiscoveryModelcentric2019; @oconnorScientificPolarization2018]. Second, of the four candidate factors we tested, one (credibility enhancing displays) is derived from formal theoretical modeling in gene-culture coevolution, while the other three emerged from verbal argumentation. In terms of predicting large-scale real-world patterns, the formally modeled theory empirically outclassed the three ‘veories’ ^['veories' are verbal theories, the intuitive verbal models that predominate much of psychology, and are a useful first step in formal theorizing.]. Verbal theorizing is an important step in the research process, but formal theorizing is an indispensable tool as well [@smaldinoModelsAreStupid2017]. Formal models are obviously wrong, yet they are useful mental prostheses simply because they are precisely and transparently wrong [@lalandSenseNonsenseEvolutionary2011; @smaldinoModelsAreStupid2017]. Further development in theory can circumvent methodological challenges to replicability [@muthukrishnaProblemTheory2019; @smaldinoBetterMethodsCan2019], sharpen thinking beyond statistical desiderada [@navarroDevilDeepBlue2018], and spur scientific discovery [@devezerScientificDiscoveryModelcentric2019]. Third, most psychology research nowadays emerges from convenience samples of undergraduates and Mechanical Turk workers. These samples are fine for some purposes, but representative samples are necessary for others. While our nationally representative sampling allows us to generalize beyond samples we can access for free (in lab) or cheap (MTurk), even a large nationally representative sample barely scratches the surface of human diversity [@radPsychologyHomoSapiens2018; @henrichWeirdestPeopleWorld2010]. As such, we encourage similar analyses across different cultures [@willardTestingTheoriesSecularization2017]. This is especially necessary because cultural cues themselves emerged as the strongest predictor of belief and disbelief. If this general pattern holds across societies, we predict that—beyond religion—veories developed by WEIRD researchers to explain the weird mental states of WEIRD participants will continue to ever more precisely answer only an outlier of an outlier of our most important scientific questions about human nature. 
 
 ## Coda
 
@@ -830,7 +741,7 @@ Category <- c( "< High School", "High School", "Some College", "College +",
                  "White", "Black", "Not Listed", "Multiracial", "Hispanic")
 
 Percent <- (c( LessThanHSProp, HighSchoolProp, SomeCollProp, BachelorBeyondProp,
-                BeliefProp, NoBeliefProp,
+                NoBeliefProp, BeliefProp,
                 CatholicProp, Evangelical_ProtestantProp, JehovahWProp, MormonProp, JewishProp, MuslimProp, GROrthodoxProp, HinduProp, BuddhistProp, UUProp, OtherChristianProp, OtherNonChristianProp, NoReligionProp, AtheistProp, AgnosticProp, NotListedProp,
                 WhiteProp,BlackProp,OtherProp,MultiracialProp,HispanicProp) * 100) %>% round(digits = dig)
 

@@ -22,7 +22,7 @@ header-includes:
 indent: true
 author:
    - Will M. Gervais^[University of Kentucky, Psychology, will.gervais@gmail.com]
-   - Maxine B. Najle^[Blue Labs Analytics, Washington, D.C.]
+   - Maxine B. Najle^[BlueLabs Analytics, Washington, D.C.]
    - Sarah R. Schiavone^[University of California-Davis, Psychology]
    - Nava Caluori^[University of Virginia, Psychology]
 
@@ -39,6 +39,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(rethinking)
 library(tidyverse)
 library(kableExtra)
+library(ggpubr)
 ```
 
 ```{r functions, echo=FALSE}
@@ -110,15 +111,146 @@ This entails a series of models:
    6.	To test whether cognitive style’s effects differ across cultural learning, we will have a model in which CRT, CREDs, and their interaction predict religion.
    7.	To test the hypothesis that mentalizing is especially important in the context of cultural learning and motivation, we will have a model with mentalizing, CREDs, motivation and the mentalizing-by-CREDs and mentalizing-by-motivation interaction terms predicting religion.
    
-The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and essentially zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
+The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
 
-## Mentalizing: Quadratic Term
-We initially preregistered inclusion of quadratic terms for mentalizing to test for the possibility that only extreme low advanced mentalizing is associated with disbelief. After the preregistration but before data collection and analysis, we realized that the polynomial approach was a very poor test of this idea and invites model overfitting [@mcelreathStatisticalRethinkingBayesian2016]. The preregistered model including a quadratic for mentalizing was theoretically dubious and statistically naive, so we left it out of main analyses. We checked a few of the primary models to see if inclusion of a quadratic did much. It did not. Information criteria suggested that models were always better without a quadratic term for mentalizing, and the quadratic term itself never amounted to much. Additional exploration about a possible low-range mentalizing blip in atheism may warrant future research with a statistically appropriate model.
+# Departure from preregistration
+We initially preregistered inclusion of quadratic terms for mentalizing to test for the possibility that only extreme low advanced mentalizing is associated with disbelief. After the preregistration but before data collection and analysis, we realized that the polynomial approach was a very poor test of this idea and invites model overfitting [@mcelreathStatisticalRethinkingBayesian2016]. The preregistered models including a quadratic for mentalizing were theoretically dubious and statistically naive, so we left them out of main analyses. We checked a few of the primary models to see if inclusion of a quadratic did much. It did not. Information criteria (WAIC) suggested that models were always better without a quadratic term for mentalizing, and the quadratic term itself never amounted to much. Additional exploration about a possible low-end mentalizing blip in atheism may warrant future research with a statistically appropriate model.
 
 \pagebreak
 # 1. Individual Replications
 
 As the models without covariates are already summarized in the main document, here is the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still repicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. Table 1 summarizes the individual replication results.
+
+Figure 1 displays scatterplots of each individual analysis.
+
+```{r individual scatters, echo=F, message=F, error=F, fig.cap='Scatterplots for individual replication models'}
+
+go <- read.csv('go.csv')
+
+go$atheist <- go$god_y*-1 + 1
+go$disbelief <- go$sbs_m * -1
+go$ment_lo <- go$pt_m * -1
+go$cred_lo <- go$cred_m * -1
+go$security <- go$mot_m * -1
+go$reflection <- go$crtZ
+go$ageZ <- scale(go$age, center=T, scale=T)[,]
+go$educZ <- scale(go$educ, center=T, scale=T)[,]
+go$femZ <- scale(go$female, scale=T, center = T)[,]
+go$econ_consZ <- scale(go$econ_cons, center=T, scale=T)[,]
+go$social_consZ <- scale(go$social_cons, center=T, scale=T)[,]
+
+
+d <- select(go, 
+            disbelief, 
+            ment_lo, 
+            security, 
+            cred_lo, 
+            reflection,
+            ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
+
+
+dment_nc <- select(d, disbelief, ment_lo)
+dment_nc <- dment_nc[complete.cases(dment_nc),]
+
+dsec_nc <- select(d, disbelief, security)
+dsec_nc <- dsec_nc[complete.cases(dsec_nc),]
+
+dcred_nc <- select(d, disbelief, cred_lo)
+dcred_nc <- dcred_nc[complete.cases(dcred_nc),]
+
+dref_nc <- select(d, disbelief, reflection)
+dref_nc <- dref_nc[complete.cases(dref_nc),]
+
+
+# mentalizing
+
+mp <- ggplot(dment_nc, aes(x=-1*ment_lo, y=-1*disbelief)) +
+  labs(x='Advanced\nMentalizing', y= 'Belief') +
+  geom_point(alpha=.1, position='jitter', color='darkred') +
+  stat_smooth(method=lm, color='darkred') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkred'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# motivation
+
+sp <- ggplot(dsec_nc, aes(x=security, y=-1*disbelief)) +
+  labs(x='Existential\nSecurity', y= 'Belief') +
+  geom_point(alpha=.1, position='jitter', color='darkblue') +
+  stat_smooth(method=lm, color='darkblue') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkblue'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+# CREDs
+
+cp <- ggplot(dcred_nc, aes(x=-1*cred_lo, y=-1*disbelief)) +
+  labs(x='Religious\nCREDs', y= 'Belief') +
+  geom_point(alpha=.1, position='jitter', color='purple3') +
+  stat_smooth(method=lm, color='purple3') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='purple3'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+
+# reflection cognitive style
+
+rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
+  labs(x='Cognitive\nReflection', y= 'Belief') +
+  geom_point(alpha=.1, position='jitter', color='darkgreen') +
+  stat_smooth(method=lm, color='darkgreen') +
+  theme_bw() +
+  theme(text = element_text(family="Times"),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 20, color='darkgreen'),
+        axis.title.y = element_text(size = 20),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.background = element_blank(),
+        plot.background = element_blank(),
+        panel.border = element_rect(color="darkgrey")
+  )
+
+
+ ggarrange(mp, sp, cp, rp, labels = c("A", "B", "C", "D"), ncol = 2, nrow = 2)
+```
+
 
 ```{r replications table, echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -172,7 +304,6 @@ d <- select(go,
             cred_lo, 
             reflection,
             ageZ, educZ, femZ, econ_consZ, social_consZ, eXtra_m, Consc_m, Neuro_m, Agree_m, Open_m, Hum_m)
-
 
 dfull_nc <- d %>% select(disbelief, ment_lo, security, cred_lo, reflection) %>% drop_na()
 
@@ -239,7 +370,8 @@ mentint <- as.data.frame(extract.samples(mentint_cv, n=145000))
 We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alas, we did't find much of any interactions between mindblind atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. This is in a sense unsurprising because mindblind atheism was not especially robust across alternative models throughout this project.
 
 
-
+\pagebreak
+# References
 
 
 
