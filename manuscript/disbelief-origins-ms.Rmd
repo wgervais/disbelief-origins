@@ -2,9 +2,9 @@
 title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
 
 output:
-  # pdf_document: default
-   html_document:
-     df_print: paged
+   pdf_document: default
+   # html_document:
+    # df_print: paged
 bibliography: BAMLabLib.bib
 csl: nature.csl
 header-includes:
@@ -236,14 +236,6 @@ While it is clear that a large and perhaps unrecognized proportion of the global
 
 Prominent theoretical approaches make rather divergent predictions about which sources of atheism (mindblind, apatheism, inCREDulous, or analytic) are most important. First, secularization models [@inglehartSacredSecularReligion2004; @kayGodGovernmentTesting2008; @vailExploringExistentialFunction2012] posit that increases in existential security (wealth, health, education, etc.) reduce religious motivation; this approach is common in sociology of religion [@inglehartSacredSecularReligion2004] and in social psychology under the banner of compensatory control [@kayGodGovernmentTesting2008; @laurinBeliefGodUnderstanding2008]. Second, cognitive science of religion and evolutionary psychology often view religion as a cognitive byproduct of other mental adaptations [@kirkpatrickEvolutionaryPsychologyReligion1999; @barrettWhyWouldAnyone2004; @boyerBeingHumanReligion2008], such as mind perception [@gervaisPerceivingMindsGods2013] or predator detection ^[Though highly cited and widely discussed, there is a lack of actual empirical evidence supporting a Hyperactive Agency Detection Device and its contribution to religious cognition. Anecdotally, most graduate students in cognitive science of religion have tried these studies to no avail.]. In this view, challenges in the core cognitive faculties underlying such adaptations (e.g., advanced mentalizing) would predict disbelief, but the primary route to disbelief is people overriding their religious intuitions via effortful cognitive reflection ^[Prominent scholars of this tradition claim, for example, that atheism "require[s]...cognitive effort" [@barrettRelativeUnnaturalnessAtheism2010] and that "disbelief is generally the result of deliberate, effortful work" [@boyerBeingHumanReligion2008], strong claims for the primacy of analytic atheism.]. Third, cultural evolutionary models highlight the social learning processes [@mesoudiUnifiedScienceCultural2006; @rendellCognitiveCultureTheoretical2011; @boydCulturalNicheWhy2011; @klineHowLearnTeaching2015; @legareImitationInnovationDual2015] underpinning religious beliefs [@legareCoexistenceNaturalSupernatural2012; @laneSocioculturalInputFacilitates2012; @evansCognitiveContextualFactors2001; @willardMemoryBeliefTransmission2016] and disbelief, and largely predict that context-biased social learning—especially CREDs [@henrichEvolutionCostlyDisplays2009]—would be strongly associated with degrees of religious belief. Finally, dual inheritance theory integrates these various perspectives, and predicts that CREDs would be most important, followed by other factors such as cognitive reflection, mentalizing, and perhaps existential security. Table 1 depicts predictions derived from each of these perspectives. By simultaneously considering mindblind atheism, apatheism, inCREDulous atheism, and analytic atheism, we are able to evaluate the suitability of four prominent theoretical approaches from separate academic subdisciplines for understanding the origins of religious disbelief.
 
-We preregistered a set of analyses that dierctly pit secularization, cognitive byproduct, socialization, and dual inheritance models against each other. Specifically, we posed three broad questions:
-
-I.	*What are the relative predictive contributions of each factor when considered simultaneously?*
-II.	*How do the factors interact with each other in predicting belief disbelief?*
-III.	*Does early work on each individual factor successfully replicate in a nationally representative sample?*
-
-To approach these questions, we contracted a nationally representative sample of USA adults (*N*= `r nrow(d)`) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) exposure to credibility enhancing displays (CREDs) of religious faith, and 4) reflective versus intuitive cognitive style. For robustness, we also included a number of demographic and personality covariates. Full materials, data, and code are available at [GitHub](https://github.com/wgervais/disbelief-origins).
-
 ```{r predictions table, echo=F}
 model <- c('Secularization', 'Cognitive Byproduct', 'Social Learning', 'Dual Inheritance')
 dis <- c('Sociology & Social Psych', 'Ev Psych & Cog Sci Rel', 'Cultural Evolution', 'Gene-Culture Coevolution')
@@ -261,16 +253,24 @@ predtab <- data.frame(
 
  
 kable(predtab, booktabs= T, caption = "Predictions From Prominent Theories", align=c("l", "l", rep("r", 4))) %>%
-   kable_styling(full_width = F, position = "center") %>%
+   kable_styling(full_width = F, position = "center", latex_options = "hold_position") %>%
    column_spec(1, bold = T) %>%
    footnote(general = "+ symbols indicate the predicted strength of each type of atheism, by theory", number = c("mindblind = relatively lower in advanced mentalizing", "apatheist = relatively more existentially secure", "inCREDulous = exposed to relatively fewer religious CREDs", "Analytic = scoring relatively higher on cognitive reflection"))
 ```
+
+We preregistered a set of analyses that dierctly pit secularization, cognitive byproduct, socialization, and dual inheritance models against each other. Specifically, we posed three broad questions:
+
+I.	*What are the relative predictive contributions of each factor when considered simultaneously?*
+II.	*How do the factors interact with each other in predicting belief disbelief?*
+III.	*Does early work on each individual factor successfully replicate in a nationally representative sample?*
+
+To approach these questions, we contracted a nationally representative sample of USA adults (*N*= `r nrow(d)`) from GfK. Primarily, we were interested in predicting degrees of religious belief and disbelief with measures of 1) advanced mentalizing, 2) existential security, 3) exposure to credibility enhancing displays (CREDs) of religious faith, and 4) reflective versus intuitive cognitive style. For robustness, we also included a number of demographic and personality covariates. Full materials, data, and code are available at [GitHub](https://github.com/wgervais/disbelief-origins).
 
 # Results
 
 ## I. Relative Contributions
 
-Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we conducted analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model predicting a continuous multi-item measure of religious disbelief (see Measures for details), witnessing fewer credible displays of faith proved to be by far the most powerful predictor of religious disbelief (see Table 2 and Figure 1). Credibility enhancing displays of faith predict belief, and their absence predicts atheism, $\beta$ = `r  printB(full_cv_post$b_cred)`^[Values in brackets are 97% highest posterior density interval (HPDI).], $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_cred)`^[$\mathrm{P}(\beta > 0 \mid data)$ = 1 indicates a posterior probability exceeding .99.]. Cognitive reflection remained a consistent predictor of religious disbelief, $\beta$ = `r  printB(full_cv_post$b_ref)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ref)`, but following earlier cross-cultural work [@gervaisAnalyticAtheismCrossculturally2018] its predictive power was quite meager. Mentalizing challenges^[Throughout, we also preregistered inclusion of a possible quadratic relationship between mentalizing and disbelief. For theoretical and statistical reasons, we depart from preregistration and don't analyze the quadratic here. See online Supplement for further discussion.] were reliably but weakly associated with disbelief, $\beta$ = `r  printB(full_cv_post$b_ment)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ment)`, and existential security predicted essentially nothing. Clearly, inCREDulous atheism is the largest individual pathway when all four are considered simultaneously.
+Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we conducted analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model predicting a continuous multi-item measure of religious disbelief (see Measures for details), witnessing fewer credible displays of faith proved to be by far the most powerful predictor of religious disbelief (see Table 2 and Figure 1). Credibility enhancing displays of faith predict belief, and their absence predicts atheism, $\beta$ = `r  printB(full_cv_post$b_cred)`^[Values in brackets are 97% highest posterior density interval (HPDI).], $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_cred)`^[$\mathrm{P}(\beta > 0 \mid data)$ = 1 indicates a posterior probability exceeding .99.]. Cognitive reflection remained a consistent predictor of religious disbelief, $\beta$ = `r  printB(full_cv_post$b_ref)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ref)`, but following earlier cross-cultural work [@gervaisAnalyticAtheismCrossculturally2018] its predictive power was quite meager. Mentalizing challenges^[We preregistered a possible quadratic relationship between mentalizing and disbelief. For theoretical and statistical reasons, we depart from preregistration and don't analyze the quadratic here. See online Supplement for further discussion.] were reliably but weakly associated with disbelief, $\beta$ = `r  printB(full_cv_post$b_ment)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ment)`, and existential security predicted essentially nothing. Clearly, inCREDulous atheism is the largest individual pathway when all four are considered simultaneously.
 
 ```{r full model table, echo=FALSE}
 
@@ -302,6 +302,7 @@ kable(fulltab, booktabs= T, caption = "Predicting Disbelief: Full Model Summary"
    footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
    
 ```
+
 ```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Posterior densities illustrating how strongly each factor predicts disbelief. Height in each density indexes credibility of estimate: values higher up each curve are better guesses.'}
 post.b <-  full_cv_post %>% select( 'mindblind\n\n\n' = b_ment, 'apatheism\n\n\n' = b_sec, 'inCREDulous\n\n\n' = b_cred, 'analytic\n\n\n' = b_ref) 
 
@@ -316,9 +317,9 @@ rcol <- "darkturquoise"
 
 
 
-ggplot(post.long.b, aes(x = beta, y = type, fill = type, color=type)) +
+ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
   geom_vline(xintercept = 0, color='darkgrey') +
-  geom_density_ridges(alpha = .7, scale = 1.9, rel_min_height = 0.01, size=0) +
+  geom_density_ridges(alpha = .7, scale = 1.9, rel_min_height = 0.01, size=0, color=NA) +
   labs(x = '\nAssociation With Disbelief\n(standardized beta)') +
   scale_x_continuous(limits = c(-.1, .4)) +
   scale_y_discrete(expand = expand_scale(add = c(0.3, 2))) +

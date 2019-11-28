@@ -20,13 +20,8 @@ header-includes:
    - \usepackage{footnote}
    - \renewcommand{\thefootnote}{\roman{footnote}}
 indent: true
-author:
-   - Will M. Gervais^[University of Kentucky, Psychology, will.gervais@gmail.com]
-   - Maxine B. Najle^[BlueLabs Analytics, Washington, D.C.]
-   - Sarah R. Schiavone^[University of California-Davis, Psychology]
-   - Nava Caluori^[University of Virginia, Psychology]
 
-date: "Preprint from `r format(Sys.time(), '%d %B %Y')`"
+date: "Preprint date: `r format(Sys.time(), '%d %B %Y')`"
 ---
 \SetWatermarkText{SUPPLEMENT}
 \SetWatermarkLightness{.97}
@@ -125,6 +120,29 @@ After the preregistration but before data collection and analysis, we realized t
 As the models without covariates are already summarized in the main document, here is the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still repicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. Table 1 summarizes the individual replication results.
 
 Figure 1 displays scatterplots of each individual analysis.
+```{r replications table, echo=FALSE, warning=FALSE, message=FALSE}
+
+zeros.cv <- read.csv('zero-order-posteriors-cv.csv')
+zeros.cv <- select(zeros.cv, -X)
+
+zero.m <- zeros.cv %>% sapply(mean) %>% unname %>% round(digits = dig)
+zero.l <- zeros.cv %>% sapply(low) %>% unname %>% round(digits = dig)
+zero.h <- zeros.cv %>% sapply(high) %>% unname %>% round(digits = dig)
+zero.pr <- zeros.cv %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
+
+pdi <- paste0('[', zero.l, ', ', zero.h, ']')
+
+
+v <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic')
+
+zero.table <- data.frame(Variable = v, Beta = zero.m, HPDI= pdi, Pr = zero.pr)
+zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
+
+kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Replication Analyses With Covariates", align = c("l", "r", "r", "r")) %>%
+   kable_styling(full_width = F, position = "center", latex_options = "hold_position") %>%
+   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
+
+```
 
 ```{r individual scatters, echo=F, message=F, error=F, fig.cap='Scatterplots for individual replication models'}
 mcol <- "deeppink"
@@ -262,30 +280,6 @@ rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
 ```
 
 
-```{r replications table, echo=FALSE, warning=FALSE, message=FALSE}
-
-zeros.cv <- read.csv('zero-order-posteriors-cv.csv')
-zeros.cv <- select(zeros.cv, -X)
-
-zero.m <- zeros.cv %>% sapply(mean) %>% unname %>% round(digits = dig)
-zero.l <- zeros.cv %>% sapply(low) %>% unname %>% round(digits = dig)
-zero.h <- zeros.cv %>% sapply(high) %>% unname %>% round(digits = dig)
-zero.pr <- zeros.cv %>% sapply(biggerZero) %>% unname %>% round(digits = dig)
-
-pdi <- paste0('[', zero.l, ', ', zero.h, ']')
-
-
-v <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic')
-
-zero.table <- data.frame(Variable = v, Beta = zero.m, HPDI= pdi, Pr = zero.pr)
-zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
-
-kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Replication Analyses With Covariates", align = c("l", "r", "r", "r")) %>%
-   kable_styling(full_width = F, position = "center") %>%
-   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
-
-```
-
 \pagebreak
 # 2. Relative Contributions
 
@@ -310,7 +304,7 @@ full.nc.table <- data.frame(Variable = v, Beta = full.nc.m, HPDI= pdi, Pr = full
 full.nc.table$Pr[full.nc.table$Pr == 1] <- '>0.99'
 
 kable(full.nc.table, booktabs= T, caption = "Full Model, No Covariates", align = c("l", "r", "r", "r")) %>%
-   kable_styling(full_width = F, position = "center") %>%
+   kable_styling(full_width = F, position = "center", latex_options = "hold_position") %>%
    footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
 
 ```
@@ -319,8 +313,7 @@ kable(full.nc.table, booktabs= T, caption = "Full Model, No Covariates", align =
 \pagebreak
 # 3. Interactions: Mindblind Atheism
 
-We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alternatively, if mentalizing is a necessary precondition for belief, then other factors might matter little when mentalizing is sufficiently low. Alas, we did't find interactions between mindblind atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. This is in a sense unsurprising because mindblind atheism was not especially robust across alternative models throughout this project.
-
+We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mindblind atheism and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alternatively, if mentalizing is a necessary precondition for belief, then other factors might matter little when mentalizing is sufficiently low. Alas, we did't find interactions between mindblind atheism and inCREDulous atheism, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with apatheism, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. The weak association between lower advanced mentalizing and disbelief appeared largely independent of existential security or religious CREDs in this sample.
 
 \pagebreak
 # References
