@@ -1,6 +1,7 @@
 ---
 title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
 
+
 output:
    pdf_document: default
    # html_document:
@@ -254,37 +255,6 @@ To approach these questions, we contracted a nationally representative sample of
 
 Our most important analyses considered the relative contributions of all four factors operating in concert. As preregistered, we conducted analyses in which the four core factors predict individual differences in belief and disbelief, both in the presence and absence of additional covariates. In our full model predicting a continuous multi-item measure of religious disbelief (see Measures for details), witnessing fewer credible displays of faith proved to be by far the most powerful predictor of religious disbelief (see Table 2 and Figure 1). Credibility enhancing displays of faith predict belief, and their absence predicts atheism, $\beta$ = `r  printB(full_cv_post$b_cred)`^[Values in brackets are 97% highest posterior density interval (HPDI).], $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_cred)`^[$\mathrm{P}(\beta > 0 \mid data)$ = 1 indicates a posterior probability exceeding .99.]. Cognitive reflection remained a consistent predictor of religious disbelief, $\beta$ = `r  printB(full_cv_post$b_ref)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ref)`, but following earlier cross-cultural work [@gervaisAnalyticAtheismCrossculturally2018] its predictive power was relatively meager. Lower scores on a measure of advanced mentalizing abilities^[We preregistered a possible quadratic relationship between mentalizing and disbelief. For theoretical and statistical reasons, we depart from preregistration and don't analyze the quadratic here. See online Supplement for further discussion.] were reliably but weakly associated with disbelief, $\beta$ = `r  printB(full_cv_post$b_ment)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(full_cv_post$b_ment)`, and existential security predicted essentially nothing. Clearly, inCREDulous atheism is the largest individual pathway when all four are considered simultaneously.
 
-```{r full model table, echo=FALSE}
-
-
-fullPost <- full_cv_post %>% select(-X, -a, -sigma)
-
-fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
-fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
-fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
-
-
-beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits = dig)
-beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits = dig)
-beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits = dig)
-hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
-Pr0 <- fullPost %>% sapply(biggerZero) %>% unname
-
-pred <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
-
-fulltab <- data.frame(Variable = pred, Beta = beta, HPDI = hpdi, Pr = Pr0 )
-fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
-fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
-
-
-
-kable(fulltab, booktabs= T, caption = "Predicting Disbelief: Full Model Summary", align=c("l", "r", "r", "r")) %>%
-   kable_styling(full_width = F, position = "center") %>%
-   add_indent(5:15) %>%
-   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
-   
-```
-
 ```{r posterior plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap='Posterior densities illustrating how strongly each factor predicts disbelief. Height in each density indexes credibility of estimate: values higher up each curve are better guesses.'}
 post.b <-  full_cv_post %>% select( 'mindblind\n\n\n' = b_ment, 'apatheism\n\n\n' = b_sec, 'inCREDulous\n\n\n' = b_cred, 'analytic\n\n\n' = b_ref) 
 
@@ -323,6 +293,37 @@ ggplot(post.long.b, aes(x = beta, y = type, fill = type)) +
   )
 
 
+```
+
+```{r full model table, echo=FALSE}
+
+
+fullPost <- full_cv_post %>% select(-X, -a, -sigma)
+
+fullPost$b_female <- fullPost$b_female * -1 # reverse to score for male = disbelief
+fullPost$b_social_cons <- fullPost$b_social_cons * -1 # reverse so social lib = disbelief
+fullPost$b_Agree <- fullPost$b_Agree * -1 #reverse so low aggreable = disbelief
+
+
+beta <- fullPost %>% sapply(mean) %>% unname %>% round(digits = dig)
+beta.l <- fullPost %>% sapply(low) %>% unname %>% round(digits = dig)
+beta.h <- fullPost %>% sapply(high) %>% unname %>% round(digits = dig)
+hpdi <- paste0('[', beta.l, ', ', beta.h, ']')
+Pr0 <- fullPost %>% sapply(biggerZero) %>% unname
+
+pred <- c('mindblind', 'apatheism', 'inCREDulous', 'analytic', 'Age', 'Education', 'Male', 'Social Lib', 'Economic Cons', 'Extraversion', 'Conscientiousness', 'Neuroticism', 'Low Agreeableness', 'Openness', 'Honesty/Humility')
+
+fulltab <- data.frame(Variable = pred, Beta = beta, HPDI = hpdi, Pr = Pr0 )
+fulltab$Pr[fulltab$Pr == 1] <- '> 0.99'
+fulltab$Pr[fulltab$Pr == 0] <- '< 0.01'
+
+
+
+kable(fulltab, booktabs= T, caption = "Predicting Disbelief: Full Model Summary", align=c("l", "r", "r", "r")) %>%
+   kable_styling(full_width = F, position = "center", latex_options = "hold_position") %>%
+   add_indent(5:15) %>%
+   footnote(general = " ", number = c("Beta = standardized beta", "HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
+   
 ```
 
 ### Atheism: Binary Measure
@@ -438,7 +439,7 @@ zero.table <- data.frame(Variable = v, r = zero.m, HPDI= pdi, Pr = zero.pr)
 zero.table$Pr[zero.table$Pr == 1] <- '>0.99'
 
 kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Replication Analyses", align = c("l", "r", "r", "r")) %>%
-   kable_styling(full_width = F, position = "center") %>%
+   kable_styling(full_width = F, position = "center", latex_options = "hold_position") %>%
    footnote(general = " ", number = c("HPDI = 97% Highest posterior density interval", "Pr = posterior probability of Beta > 0"))
 
 ```
