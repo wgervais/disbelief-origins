@@ -89,7 +89,7 @@ getA <- function(input){
 \pagebreak
 # The Preregistration
 
-We preregistered a series of analyses. Here, we lay out models and model summaries for all of these analyses. Here's what we preregistered:
+We preregistered a series of analyses, [PREREGISTRATION LINK](https://osf.io/kfasv). Here, we lay out models and model summaries for all of these analyses. Here's what we preregistered:
 
 > "We will perform a series of 7 confirmatory tests on the full sample. Each model will be run twice: first with no covariates, then including age, gender, politics, education, & personality as covariates."
 
