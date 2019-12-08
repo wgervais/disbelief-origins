@@ -21,7 +21,7 @@ header-includes:
    - \renewcommand{\thefootnote}{\roman{footnote}}
 indent: true
 
-date: "Preprint date: `r format(Sys.time(), '%d %B %Y')`"
+date: "Preprint `r format(Sys.time(), '%B %Y')`"
 ---
 \SetWatermarkText{SUPPLEMENT}
 \SetWatermarkLightness{.97}
