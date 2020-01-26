@@ -786,10 +786,10 @@ This research was supported by a grant to the first author from the John Templet
 
 
 # Author Contributions
-WMG designed the study, with survey revision and implementation from MBN and SRS. MBN contributed feedback and piloting throughout the life of this project. WMG performed the primary analyses and NC performed descriptive analyses. WMG wrote the manuscript with NC. All authors approved the final manuscript.
+A1 designed the study, with survey revision and implementation from A2 and A3. A2 contributed feedback and piloting throughout the life of this project. A1 performed the primary analyses and A4 performed descriptive analyses. A1 wrote the manuscript with A4. All authors approved the final manuscript.
 
 # Ethics
-This project was approved by the University of Kentucky Office of Research Integrity.
+This project was approved by the Office of Research Integrity.
 
 # Data, code and materials
 
