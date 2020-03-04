@@ -1,32 +1,60 @@
 ---
-title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
-output:
-   pdf_document: default
-   # html_document:
-   #  df_print: paged
-#always_allow_html: true
-    
-bibliography: BAMLabLib.bib
-csl: apa.csl
-header-includes:
-   #- \usepackage{draftwatermark}
-   #- \SetWatermarkText{PREPRINT}
-   #- \SetWatermarkLightness{.97}
-   - \usepackage{setspace}
-   - \usepackage{lineno}
-   #- \linenumbers
-   - \usepackage{fancyhdr}
-   - \pagestyle{fancy}
-   - \fancyhead[R]{Origins of Religious Disbelief}
-   - \usepackage{footnote}
-   - \renewcommand{\thefootnote}{\roman{footnote}}
-indent: true
-toc: true
-author:
-   - Dub L. Blinded, Esq.
+title             : "The Origins of Religious Disbelief: A Dual Inheritance Approach"
+shorttitle        : "Religious Disbelief"
 
-date: "Preprint `r format(Sys.time(), '%B %Y')`"
+author: 
+  - name          : "Will M. Gervais"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "UK Psychology, Lexington, KY"
+    email         : "will.gervais@gmail.com"
+  - name          : "Maxine B. Najle"
+    affiliation   : "2"
+  - name          : "Sarah R. Schiavone"
+    affiliation   : "3"
+  - name          : "Nava Caluori"
+    affiliation   : "4"
+
+affiliation:
+  - id            : "1"
+    institution   : "University of Kentucky"
+  - id            : "2"
+    institution   : "BlueLabs Analytics"
+  - id            : "3"
+    institution   : "University of California-Davis"
+  - id            : "4"
+    institution   : "University of Virginia"
+
+authornote: |
+  
+
+abstract: |
+  Widespread religious disbelief represents a key testing ground for theories of religion. We evaluated the predictions of three prominent theoretical approaches in a nationally representative (USA, *N* = 1417) dataset with preregistered analyses, and found considerable support for a dual inheritance (gene-culture coevolution) perspective. We found that witnessing fewer credible cultural cues of religious commitment is the most potent predictor of religious disbelief, $\beta$ = 0.28, followed distantly by reflective cognitive style, $\beta$ = 0.13, and less advanced mentalizing, $\beta$ = 0.05. Low cultural exposure predicted about 90% higher odds of atheism than did peak cognitive reflection, and cognitive reflection only predicted disbelief among those relatively lower in cultural exposure. This highlights the utility of considering both evolved intuitions and transmitted culture, and emphasizes the dual roles of content- and context-biased social learning in the transmission of disbelief.
+  
+keywords          : "atheism; religion; culture; evolution; dual inheritance theory"
+wordcount         : "8031"
+
+bibliography      : ["BAMLabLib.bib"]
+
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : no
+mask              : yes
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
 ---
+
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
 
 
 ```{r setup, include=FALSE}
@@ -41,6 +69,7 @@ library(kableExtra)
 library(knitr)
 library(citr)
 library(psych)
+library(papaja)
 ```
 
 
@@ -192,17 +221,7 @@ getA <- function(input){
 }
 ```
 
-8031 words
 
-\pagebreak
-\doublespacing
-# Abstract
-
-**Widespread religious disbelief represents a key testing ground for theories of religion. We evaluated the predictions of three prominent theoretical approaches in a nationally representative (USA, *N* = `r nrow(d)`) dataset with preregistered analyses, and found considerable support for a dual inheritance (gene-culture coevolution) perspective. We found that witnessing fewer credible cultural cues of religious commitment is the most potent predictor of religious disbelief, $\beta$ = `r  mean(full_cv_post$b_cred) %>% round(digits = dig)`, followed distantly by reflective cognitive style, $\beta$ = `r  mean(full_cv_post$b_ref) %>% round(digits = dig)`, and less advanced mentalizing, $\beta$ = `r  mean(full_cv_post$b_ment) %>% round(digits = dig)`. Low cultural exposure predicted about 90% higher odds of atheism than did peak cognitive reflection, and cognitive reflection only predicted disbelief among those relatively lower in cultural exposure. This highlights the utility of considering both evolved intuitions and transmitted culture, and emphasizes the dual roles of content- and context-biased social learning in the transmission of disbelief.**
-
-**Keywords:** atheism; religion; culture; evolution; dual inheritance theory
-
-\pagebreak
 # Background
 
 Religion is a bit of an evolutionary puzzle. Organisms like ants and aardvarks tend not to engage in painful and costly collective rituals to prove their faith in unseen ant and aardvark pantheons, respectively. It is intriguing, then, that these behaviors are cross-culturally ubiquitous in humans. Evolutionary approaches to religion have proliferated in recent years [@purzyckiMoralisticGodsSupernatural2016; @wattsBroadSupernaturalPunishment2015; @baumardExplainingMoralReligions2013; @atkinsonBeliefsGodAfterlife2011; @atranReligiousSacredImperatives2012], and different theories make starkly different predictions about the existence, nature, and origins of religious disbelief. Thus, the origins of disbelief are a crucial testing ground for different theories of religion. Here we test predictions from three prominent theoretical frameworks (outlined in Table 1): secularization, cognitive byproduct, and an emerging dual inheritance (gene-culture coevolutionary) model of religion [@norenzayanOriginsReligiousDisbelief2013] that views both cognitive adaptations and specific cultural learning mechanisms [@henrichEvolutionCostlyDisplays2009] as key to the transmission of either faith or atheism [@lanmanImportanceReligiousDisplays2012; @gervaisCulturalTransmissionFaith2011; @geertzReligionNaturalAtheism2010; @harrisTrustTestimonyHow2006]. This project situates the study of religious disbelief firmly within established theoretical frameworks for studying the evolution of human behavior and contributes to broader discussions of the role of transmitted versus evoked culture in core aspects of human nature [@lalandSenseNonsenseEvolutionary2011].
@@ -798,8 +817,17 @@ All data, code, and materials are available at <https://github.com/wgervais/disb
 
 \pagebreak
 # References
-\setlength{\parindent}{-0.2in}
-\setlength{\leftskip}{0.2in}
-\setlength{\parskip}{8pt}
-\noindent
 
+\newpage
+
+# References
+```{r create_r-references}
+r_refs(file = "BAMLabLib.bib")
+```
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id="refs" custom-style="Bibliography"></div>
+\endgroup
