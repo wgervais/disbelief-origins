@@ -1,9 +1,10 @@
 ---
 title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
 output:
-   pdf_document: default
+    pdf_document: default
    # html_document:
    #  df_print: paged
+   #word_document: default
 #always_allow_html: true
     
 bibliography: BAMLabLib.bib
@@ -24,8 +25,12 @@ indent: true
 toc: true
 author:
    - Dub L. Blinded, Esq.
+   #- Will M. Gervais ^[University of Kentucky, will.gervais@gmail.com]
+   #- Maxine B. Najle ^[BlueLabs Analytics]
+   #- Sarah R. Schiavone ^[University of California-Davis]
+   #- Nava Caluori ^[University of Virginia]
 
-date: "Preprint `r format(Sys.time(), '%B %Y')`"
+date: "`r format(Sys.time(), '%B %Y')`"
 ---
 
 
@@ -192,7 +197,6 @@ getA <- function(input){
 }
 ```
 
-8031 words
 
 \pagebreak
 \doublespacing
@@ -201,6 +205,8 @@ getA <- function(input){
 **Widespread religious disbelief represents a key testing ground for theories of religion. We evaluated the predictions of three prominent theoretical approaches in a nationally representative (USA, *N* = `r nrow(d)`) dataset with preregistered analyses, and found considerable support for a dual inheritance (gene-culture coevolution) perspective. We found that witnessing fewer credible cultural cues of religious commitment is the most potent predictor of religious disbelief, $\beta$ = `r  mean(full_cv_post$b_cred) %>% round(digits = dig)`, followed distantly by reflective cognitive style, $\beta$ = `r  mean(full_cv_post$b_ref) %>% round(digits = dig)`, and less advanced mentalizing, $\beta$ = `r  mean(full_cv_post$b_ment) %>% round(digits = dig)`. Low cultural exposure predicted about 90% higher odds of atheism than did peak cognitive reflection, and cognitive reflection only predicted disbelief among those relatively lower in cultural exposure. This highlights the utility of considering both evolved intuitions and transmitted culture, and emphasizes the dual roles of content- and context-biased social learning in the transmission of disbelief.**
 
 **Keywords:** atheism; religion; culture; evolution; dual inheritance theory
+
+4856 words
 
 \pagebreak
 # Background
@@ -495,7 +501,7 @@ EconConservatismSD<-sd(messy$econ_cons, na.rm = T)
 ```
 ## Sample
 
-To obtain a nationally representative probability sample of Americans, we worked with Growth from Knowledge (GfK) and recruited a total sample of `r nrow(fullmessy)` individuals that were representative of the American population in terms of gender (`r (FemaleProp * 100) %>% round(digits = dig)`% female, `r (MaleProp * 100) %>% round(digits = dig)`% male, `r (AnotherGenderProp * 100) %>% round(digits = dig)`% listing another gender), age (*M* = `r AgeM %>% round(digits=dig)`, *SD* = `r AgeSD %>% round(digits=dig)`), race/ethnicity, education, census region, household income, home ownership status, and residence within a metropolitan area. We excluded `r nrow(fullmessy) - nrow(d)` participants who failed an attention check, leaving a total of `r nrow(d)` respondents. Participant demographics are described in Table 4.
+To obtain a nationally representative probability sample of Americans, we worked with Growth from Knowledge (GfK) and recruited a total sample of `r nrow(fullmessy)` individuals that were representative of the American population in terms of gender (`r (FemaleProp * 100) %>% round(digits = dig)`% female, `r (MaleProp * 100) %>% round(digits = dig)`% male, `r (AnotherGenderProp * 100) %>% round(digits = dig)`% listing another gender), age (*M* = `r AgeM %>% round(digits=dig)`, *SD* = `r AgeSD %>% round(digits=dig)`), race/ethnicity, education, census region, household income, home ownership status, and residence within a metropolitan area. We excluded `r nrow(fullmessy) - nrow(d)` participants who failed an attention check, leaving a total of `r nrow(d)` respondents, see Table 4.
 
 ```{r dem table, echo=FALSE}
 
@@ -525,7 +531,7 @@ kable(demtab, booktabs= T, caption = "Sample Demographics", align = c("l", "r"))
 
 ### Religious Belief
 
-We relied on a popular measure of religious belief, the Supernatural Beliefs Scale [@jongFoxholeAtheismRevisited2012], as our main dependent measure of religious belief. This scale includes items such as “There exists an all-powerful, all-knowing, loving God” and “Human beings have immaterial, immortal souls” measured on a scale from 1 (strongly disagree) to 7 (strongly agree) to assess agreement with a diverse set of items that are characteristic of religiosity. This scale was reliable, $\alpha$ = `r getA(sbs)`, *M* = `r mean(sbs_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(sbs_m, na.rm=T) %>% round(digits = dig)`. We also included a binary item in which participants simply indicated whether or not they believe in God.
+We relied on a popular measure of religious belief, the Supernatural Beliefs Scale [@jongFoxholeAtheismRevisited2012], as our main dependent measure of religious belief. This scale was reliable, $\alpha$ = `r getA(sbs)`, *M* = `r mean(sbs_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(sbs_m, na.rm=T) %>% round(digits = dig)`. We also included a binary item in which participants simply indicated whether or not they believe in God.
 
 We also included various other measures of religiosity which were used to gain a more fine-grained understanding of the demographics of our sample, and are summarized in Table 4. For example, we asked participants how often they attended services outside of weddings and funerals (1 = more than once a week, 8 = never), as well as how often they pray (1 = several times a day, 7 = never). We also asked participants to indicate the religion with which they identify, and they were allowed to select multiple applicable categories (e.g., 'atheist' and 'agnostic'). 
 
@@ -533,23 +539,21 @@ We also included various other measures of religiosity which were used to gain a
 
 To assess the four different factors that may drive religious disbelief, we measured participants’ mentalizing abilities, feelings of existential security, exposure to credible cues of religiosity (CREDs), and reflective versus intuitive cognitive style.
 
-We measured advanced mentalizing abilities, which correspond to mindblind atheism, using the Perspective Taking Subscale of the Interpersonal Reactivity Index [@davisInterpersonalReactivityIndex1980]. This measure includes items like “I try to look at everybody's side of a disagreement before I make a decision” and “Before criticizing somebody, I try to imagine how I would feel if I were in their place,” measured on a scale from 1 (strongly disagree) to 7 (strongly agree). This scale reached an acceptable level of reliability, $\alpha$ = `r getA(persp)`, *M* = `r mean(pt_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(pt_m, na.rm=T) %>% round(digits = dig)`. 
+We measured advanced mentalizing abilities, which correspond to mindblind atheism, using the Perspective Taking Subscale of the Interpersonal Reactivity Index [@davisInterpersonalReactivityIndex1980]. This scale reached an acceptable level of reliability, $\alpha$ = `r getA(persp)`, *M* = `r mean(pt_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(pt_m, na.rm=T) %>% round(digits = dig)`. 
 
-We measured feelings of existential security, which corresponds to apatheism, with a number of items assessing concerns that are salient to participants and participant faith in institutions like the government, health care, and social security to provide aid in the face of need [@willardTestingTheoriesSecularization2017].  Items about the salience of different concerns included questions about how often participants worry about losing their job, worry about having enough money in the future, and feel they cannot afford things that are necessary. These items were assessed on a scale from 1 (never) to 4 (all the time). Illustrative items regarding faith in institutions include “How much do you feel confident in our country’s social security system” and “How much do you feel that people who start out poor can become wealthy if they work hard enough,” assessed on a scale from 1 (not at all) to 4 (a lot). Items measuring faith in institutions were reverse-scored, and all items were averaged together to form a composite index of existential insecurity ($\alpha$ = `r getA(mot)`, *M* = `r mean(mot_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(mot_m, na.rm=T) %>% round(digits = dig)`), with higher scores reflecting more insecurity.
+We measured feelings of existential security, which corresponds to apatheism, with a number of items assessing concerns that are salient to participants and participant faith in institutions like the government, health care, and social security to provide aid in the face of need [@willardTestingTheoriesSecularization2017]. Items measuring faith in institutions were reverse-scored, and all items were averaged together to form a composite index of existential insecurity ($\alpha$ = `r getA(mot)`, *M* = `r mean(mot_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(mot_m, na.rm=T) %>% round(digits = dig)`), with higher scores reflecting more insecurity.
 
-We measured cognitive reflection, which corresponds to analytic atheism, using nine items from the Cognitive Reflection Test [@frederickCognitiveReflectionDecision2005; @primiDevelopmentTestingNew2016; @toplakAssessingMiserlyInformation2014]. This measure poses a series of questions to participants that rely on logical reasoning to answer correctly. All have a seemingly simple initial answer, but upon further consideration people arrive at a different (and correct) answer. We therefore measured whether or not participants provided the correct answers to these questions that require more cognitive reflection. If they answered a question correctly, they were given a 1, and if they answered it incorrectly, they were given a 0. Our full index of cognitive reflection is composed of the sum of the number of questions that each participant answered correctly, with a higher score thus indicating a more reflective and analytic cognitive style. The average score was `r mean(crt) %>% round(digits = dig)`, with a standard deviation of `r sd(crt) %>% round(digits = dig)`.
+We measured cognitive reflection, which corresponds to analytic atheism, using nine items from the Cognitive Reflection Test [@frederickCognitiveReflectionDecision2005; @primiDevelopmentTestingNew2016; @toplakAssessingMiserlyInformation2014]. Our full index of cognitive reflection is composed of the sum of the 9 questions that each participant answered correctly, with a higher score thus indicating a more reflective and analytic cognitive style. The average score was `r mean(crt) %>% round(digits = dig)`, with a standard deviation of `r sd(crt) %>% round(digits = dig)`.
 
-We measured exposure to CREDs, which corresponds to inCREDulous atheism, with the CREDs Scale [@lanmanReligiousActionsSpeak2017]. This scale assesses the extent to which caregivers demonstrated religious behaviors during the respondent’s childhood, such as going to religious services, acting as good religious role models, and making personal sacrifices to religion. The frequency of these types of behaviors was measured on a scale ranging from 1 (never) to 4 (always). This scale was highly reliable, $\alpha$ = `r getA(cred)`, *M* = `r mean(cred_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(cred_m, na.rm=T) %>% round(digits = dig)`. 
+We measured exposure to CREDs, which corresponds to inCREDulous atheism, with the CREDs Scale [@lanmanReligiousActionsSpeak2017]. This scale assesses the extent to which caregivers demonstrated religious behaviors during the respondent’s childhood, such as going to religious services, acting as good religious role models, and making personal sacrifices to religion. This scale was highly reliable, $\alpha$ = `r getA(cred)`, *M* = `r mean(cred_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(cred_m, na.rm=T) %>% round(digits = dig)`. 
 
 ### Personality Measures
 
-We also gathered data on  participants’ personality to serve as control variables in our models. We used the MINI-IPIP6 [@milojevMiniIPIP6TinyHighly2013] to measure the personality factors of Extraversion ($\alpha$ = `r getA(eXtra)`, *M* = `r mean(eXtra_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(eXtra_m, na.rm=T) %>% round(digits = dig)`), Agreeableness ($\alpha$ = `r getA(Agree)`, *M* = `r mean(Agree_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Agree_m, na.rm=T) %>% round(digits = dig)`), Conscientiousness ($\alpha$ = `r getA(Consc)`, *M* = `r mean(Consc_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Consc_m, na.rm=T) %>% round(digits = dig)`), Neuroticism ($\alpha$ = `r getA(Neuro)`, *M* = `r mean(Neuro_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Neuro_m, na.rm=T) %>% round(digits = dig)`), Openness to Experience ($\alpha$ = `r getA(Open)`, *M* = `r mean(Open_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Open_m, na.rm=T) %>% round(digits = dig)`), and Honesty-Humility ($\alpha$ = `r getA(Hum)`, *M* = `r mean(Hum_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Hum_m, na.rm=T) %>% round(digits = dig)`). Items in this scale were measured on a 1 (strongly disagree) to 7 (strongly agree) scale.
-
-We also measured tolerance for ambiguity using the Multiple Stimulus Types Ambiguity Tolerance Scale-II [@mclainEvidencePropertiesAmbiguity2009]. This included items such as “I don’t tolerate ambiguous situations well (reversed)” and “I prefer a situation in which there is some ambiguity.” This scale was reliable, $\alpha$ = `r getA(tfa)`, *M* = `r mean(tfa_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(tfa_m, na.rm=T) %>% round(digits = dig)`.
+We also gathered data on  participants’ personality to serve as control variables in our models. We used the MINI-IPIP6 [@milojevMiniIPIP6TinyHighly2013] to measure the personality factors of Extraversion ($\alpha$ = `r getA(eXtra)`, *M* = `r mean(eXtra_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(eXtra_m, na.rm=T) %>% round(digits = dig)`), Agreeableness ($\alpha$ = `r getA(Agree)`, *M* = `r mean(Agree_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Agree_m, na.rm=T) %>% round(digits = dig)`), Conscientiousness ($\alpha$ = `r getA(Consc)`, *M* = `r mean(Consc_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Consc_m, na.rm=T) %>% round(digits = dig)`), Neuroticism ($\alpha$ = `r getA(Neuro)`, *M* = `r mean(Neuro_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Neuro_m, na.rm=T) %>% round(digits = dig)`), Openness to Experience ($\alpha$ = `r getA(Open)`, *M* = `r mean(Open_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Open_m, na.rm=T) %>% round(digits = dig)`), and Honesty-Humility ($\alpha$ = `r getA(Hum)`, *M* = `r mean(Hum_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(Hum_m, na.rm=T) %>% round(digits = dig)`).
 
 ### General Demographics
 
-Finally, we included a demographics questionnaire to adjust for known religion-predictive participant characteristics like age, education, and political ideology. We assessed education level by asking participants what their highest level of education was, from no formal education to professional or doctorate degree. We measured social ideology with the question “With respect to your views on social issues (e.g., same-sex marriage, abortion), would you consider yourself more liberal or more conservative?” (1 = very liberal to 7 = very conservative, *M* = `r SocialConservatismM %>% round(digits = dig)`, *SD* = `r SocialConservatismSD %>% round(digits = dig)`) and economic ideology with the question “With respect to your views on economic issues (e.g., taxes, government spending), would you consider yourself more liberal or more conservative?” (1 = very liberal to 7 = very conservative, , *M* = `r EconConservatismM %>% round(digits = dig)`, *SD* = `r EconConservatismSD %>% round(digits = dig)`).
+Finally, we included a demographics questionnaire to adjust for known religion-predictive participant characteristics like age, education, and political ideology. We assessed education level by asking participants what their highest level of education was, from no formal education to professional or doctorate degree. We used single face-valid items to assess both social (1 = very liberal to 7 = very conservative, *M* = `r SocialConservatismM %>% round(digits = dig)`, *SD* = `r SocialConservatismSD %>% round(digits = dig)`) and economic (1 = very liberal to 7 = very conservative, , *M* = `r EconConservatismM %>% round(digits = dig)`, *SD* = `r EconConservatismSD %>% round(digits = dig)`) political ideology.
 
 # Results
 
