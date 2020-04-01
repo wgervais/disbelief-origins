@@ -1,10 +1,10 @@
 ---
 title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
 output:
-    pdf_document: default
+   pdf_document: default
    # html_document:
    #  df_print: paged
-   #word_document: default
+  # word_document: default
 #always_allow_html: true
     
 bibliography: BAMLabLib.bib
@@ -533,7 +533,7 @@ kable(demtab, booktabs= T, caption = "Sample Demographics", align = c("l", "r"))
 
 We relied on a popular measure of religious belief, the Supernatural Beliefs Scale [@jongFoxholeAtheismRevisited2012], as our main dependent measure of religious belief. This scale was reliable, $\alpha$ = `r getA(sbs)`, *M* = `r mean(sbs_m, na.rm=T) %>% round(digits = dig)`, *SD* = `r sd(sbs_m, na.rm=T) %>% round(digits = dig)`. We also included a binary item in which participants simply indicated whether or not they believe in God.
 
-We also included various other measures of religiosity which were used to gain a more fine-grained understanding of the demographics of our sample, and are summarized in Table 4. For example, we asked participants how often they attended services outside of weddings and funerals (1 = more than once a week, 8 = never), as well as how often they pray (1 = several times a day, 7 = never). We also asked participants to indicate the religion with which they identify, and they were allowed to select multiple applicable categories (e.g., 'atheist' and 'agnostic'). 
+We also included various other measures of religiosity which were used to gain a more fine-grained understanding of the demographics of our sample, and are summarized in Table 4. For example, we asked participants how often they attended services outside of weddings and funerals, as well as how often they pray. We also asked participants to indicate the religion with which they identify, and they were allowed to select multiple applicable categories (e.g., 'atheist' and 'agnostic'). 
 
 ### Pathways to Religious Disbelief
 
