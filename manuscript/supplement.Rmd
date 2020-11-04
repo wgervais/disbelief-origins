@@ -2,12 +2,12 @@
 title: "Supplement: Origins of Disbelief"
 
 output:
-  #pdf_document:
+   pdf_document:
   
  # html_document:
   #  df_print: paged
-  word_document: default
-always_allow_html: true
+  #word_document: default
+#always_allow_html: true
 
 bibliography: BAMLabLib.bib
 csl: nature.csl
@@ -24,6 +24,7 @@ header-includes:
    - \usepackage{footnote}
    - \renewcommand{\thefootnote}{\roman{footnote}}
 indent: true
+toc: true
 
 
 date: "`r format(Sys.time(), '%B %Y')`"
@@ -111,7 +112,7 @@ This entails a series of models:
    6.	To test whether cognitive style’s effects differ across cultural learning, we will have a model in which CRT, CREDs, and their interaction predict religion.
    7.	To test the hypothesis that mentalizing is especially important in the context of cultural learning and motivation, we will have a model with mentalizing, CREDs, motivation and the mentalizing-by-CREDs and mentalizing-by-motivation interaction terms predicting religion.
    
-The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, the cultural learning-by-cognitive reflection interaction with covariates, and zero-order replication analyses. Here, we spell out preregistered analyses not already included. 
+The main manuscript summarizes: our full model (all four primary predictors plus covariates), a binary full model, and the cultural learning-by-cognitive reflection interaction with covariates. Here, we spell out preregistered analyses not already included. 
 
 # Departure from preregistration
 
@@ -119,7 +120,13 @@ We initially preregistered inclusion of quadratic terms for mentalizing to test 
 
 After the preregistration but before data collection and analysis, we realized that the polynomial approach was a very poor test of this idea and invites model overfitting among other ills [@mcelreathStatisticalRethinkingBayesian2016]. The preregistered models including a quadratic for mentalizing were theoretically dubious and statistically naive, so we left them out of main analyses. We checked a few of the primary models to see if inclusion of a quadratic did much. It did not. Information criteria (WAIC) suggested that models were always better without a quadratic term for mentalizing, and the quadratic term itself never predicted much. Additional exploration about a possible low-end mentalizing blip in atheism may warrant future research with a statistically appropriate model.
 
-\pagebreak
+## Exploration and Machine Learning
+
+Our preregistration also states that -- beyond the focal preregistered analyses reported in our paper and supplement -- we would do additional exploration, in the form both 1) some machine learning, and 2) via split sample cross-validation. For the latter, the plan was to split the dataset in half and perform systematic exploration of one half, then preregister hypotheses and analyses to confirm in our holdout set. 
+
+WG aplit the set and circulated the exploratory set to the full research team. Internal communications reflect a couple of observed trends, but no systematic exploration ensued. As months and years passed, we elected to write up and publish the focal analyses and then make the datasets (full, as well as cross validation split samples) freely available for broader exploration. None of the light exploration we did conduct reflects on the inferences we draw from the full-sample preregistered analyses reported in this paper. We hope others find the data we collected useful, and explore it more fully than we have.
+
+
 # 1. Individual Replications
 
 First, we tested each candidate factor in isolation, merely to replicate in a nationally representative sample previous work that has independently correlated indices of mentalizing, existential security, religious CREDs, and cognitive style with various measures of religious belief. That is, previous work from distinct research trajectories has treated each factor in isolation. We are merely checking whether previously obtained bivariate patterns (largely stemming from convenience samples) are also evident in a nationally representative sample. This effort is more meta-scientifically than theoretically relevant: they are basic replication analyses. 
@@ -149,7 +156,7 @@ kable(zero.table, booktabs= T, caption = "Predicting Disbelief: Individual Repli
 
 ```
 
-We next performed the individual replication analyses in models including all covariates used in the main document full model. Table 2 includes the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still replicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. Table 1 summarizes the individual replication results.
+We next performed the individual replication analyses in models including all covariates used in the main document full model. Table 2 includes the summary for each model including covariates. Nothing much changes from the main models reported in the main paper. inCREDulous atheism and analytic atheism still replicate soundly, and mindblind atheism is also fairly evident. Apatheism is still essentially absent. 
 
 Figure 1 displays scatterplots of each individual analysis.
 ```{r replications table, echo=FALSE, warning=FALSE, message=FALSE}
@@ -312,10 +319,10 @@ rp <- ggplot(dref_nc, aes(x=reflection, y=-1*disbelief)) +
 ```
 
 
-\pagebreak
+
 # 2. Relative Contributions
 
-The main document includes a full model with all key predictors and covariates predicting disbelief. Here, we report the model without covariates for completeness with the preregistration. Again, not much changes. Table 2 summarizes this model.
+The main document includes a full model with all key predictors and covariates predicting disbelief. Here, we report the model without covariates for completeness with the preregistration. Again, not much changes. Table 3 summarizes this model.
 
 ```{r relative table, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -342,7 +349,7 @@ kable(full.nc.table, booktabs= T, caption = "Full Model, No Covariates", align =
 ```
 
 
-\pagebreak
+
 # 3. Interactions: Mentalizing
 
 We pursued speculation that mindblind atheism might be especially pronounced in contexts in which other pathways to atheism are muted. If this is the case, for example, then we might expect interactions between mentalizing and both cultural exposure to religion and existential security, such that mindblind atheism would be more evident among people relatively higher in religious CREDs or lower in existential security. Alternatively, if mentalizing is a necessary precondition for belief, then other factors might matter little when mentalizing is sufficiently low. With this in mind, we re-ran a version of our full model, including mentalizing-by-CREDs and mentalizing-by-security interactions. Alas, we did't find interactions between mentalizing and CREDs, $\beta$ = `r  printB(mentint$b_mc_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mc_in)` or with security, $\beta$ = `r  printB(mentint$b_mm_int)`, $\mathrm{P}(\beta > 0 \mid data)$ = `r biggerZero(mentint$b_mm_in)`. The weak association between lower advanced mentalizing and disbelief appeared largely independent of existential security or religious CREDs in this sample.

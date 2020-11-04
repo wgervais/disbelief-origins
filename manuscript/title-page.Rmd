@@ -1,0 +1,55 @@
+---
+title: "The Origins of Religious Disbelief: A Dual Inheritance Approach"
+output:
+   #pdf_document: default
+   # html_document:
+   #  df_print: paged
+  word_document: default
+always_allow_html: true
+    
+bibliography: BAMLabLib.bib
+csl: apa.csl
+header-includes:
+   #- \usepackage{draftwatermark}
+   #- \SetWatermarkText{PREPRINT}
+   #- \SetWatermarkLightness{.97}
+   - \usepackage{setspace}
+   - \usepackage{lineno}
+   #- \linenumbers
+   - \usepackage{fancyhdr}
+   - \pagestyle{fancy}
+   - \fancyhead[R]{Origins of Religious Disbelief}
+   - \usepackage{footnote}
+   - \renewcommand{\thefootnote}{\roman{footnote}}
+indent: true
+toc: false
+author: 
+   #- Dub L. Blinded, Esq.
+   - Will M. Gervais ^[Centre for Culture and Evolution, Brunel University London, will.gervais@gmail.com]
+   - Maxine B. Najle ^[BlueLabs Analytics]
+   #- Sarah R. Schiavone ^[University of California-Davis]
+   - Nava Caluori ^[University of Virginia]
+
+date: "`r format(Sys.time(), '%B %Y')`"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Acknowledgements
+
+This research was supported by a grant to WG from the John Templeton Foundation (48275). The content is solely the responsibility of the authors and does not necessarily represent the official views of its funders. The funders had no role in study design, data collection and analysis, decision to publish or preparation of the manuscript.
+
+
+# Author Contributions
+
+WG designed the study, with survey revision and implementation from MN and SS. MN contributed feedback and piloting throughout the life of this project. WG performed the primary analyses and NC performed descriptive analyses. WG wrote the manuscript with NC. All authors approved the final manuscript.
+
+# Data, code and materials
+
+This project was approved by the Office of Research Integrity at the University of Kentucky.
+
+All data, code, and materials are available at <https://github.com/wgervais/disbelief-origins> and <https://osf.io/kfasv>.
